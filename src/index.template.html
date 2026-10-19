@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kan du slå markedet?</title>
+<meta name="description" content="Tre små opgaver om investering: held mod dygtighed, at holde fast i et krak og renters rente.">
+<style>
+:root{
+  --bg:#f6f5f1;--card:#ffffff;--ink:#1d1d1b;--muted:#6b6a64;--line:#e3e1da;
+  --accent:#1f5fbf;--accent-ink:#ffffff;--good:#1a7f4b;--bad:#c0392b;--warn:#b7791f;
+  --eq:#1f5fbf;--bd:#8a6d3b;--you:#c0392b;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141413;--card:#1e1e1c;--ink:#f0efe9;--muted:#a3a29b;--line:#34332f;
+  --accent:#6aa0ff;--accent-ink:#0b1730;--good:#4cc38a;--bad:#ff7a6b;--warn:#f0b54a;
+  --eq:#6aa0ff;--bd:#d9b26a;--you:#ff7a6b;}}
+:root[data-theme="dark"]{
+  --bg:#141413;--card:#1e1e1c;--ink:#f0efe9;--muted:#a3a29b;--line:#34332f;
+  --accent:#6aa0ff;--accent-ink:#0b1730;--good:#4cc38a;--bad:#ff7a6b;--warn:#f0b54a;
+  --eq:#6aa0ff;--bd:#d9b26a;--you:#ff7a6b;}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+h1{font-size:1.25rem;margin:12px 0 8px}
+h2{font-size:1.35rem;margin:20px 0 6px}
+h3{font-size:1.05rem;margin:16px 0 6px}
+nav{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:10px}
+nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 10px;font:inherit;font-size:.85rem;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+section{display:none;padding-bottom:48px}
+section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.btn{display:inline-block;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:600;padding:12px 18px;cursor:pointer;margin:4px 6px 4px 0}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.bad{background:#c0392b;color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.grid{display:grid;grid-template-columns:1fr;gap:8px}
+@media(min-width:560px){.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:1fr 1fr 1fr}}
+.pick{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 12px;font:inherit;cursor:pointer}
+.pick b{display:block}
+.pick span{font-size:.88rem;color:var(--muted)}
+.pick[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.big{font-size:2rem;font-weight:700;line-height:1.1}
+.stat{background:var(--bg);border-radius:10px;padding:10px 12px}
+.stat .lbl{font-size:.8rem;color:var(--muted)}
+.stat .val{font-size:1.35rem;font-weight:700}
+.good{color:var(--good)}.bad{color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums}
+th,td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}
+.tablewrap{overflow-x:auto}
+canvas{width:100%;height:240px;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.alert{border:2px solid var(--bad);border-radius:14px;padding:16px;margin:12px 0;background:var(--card)}
+.alert .big{color:var(--bad)}
+label.row{display:block;margin:12px 0}
+label.row .top{display:flex;justify-content:space-between;font-weight:600}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.note{border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin:12px 0}
+.hidden{display:none!important}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar>div{height:100%;background:var(--accent)}
+ul{padding-left:20px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Kan du slå markedet?</h1>
+  <nav role="tablist">
+    <button role="tab" data-tab="start" aria-selected="true">Start</button>
+    <button role="tab" data-tab="g1">1 Forvalter</button>
+    <button role="tab" data-tab="g2">2 Hold fast</button>
+    <button role="tab" data-tab="g3">3 Million</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<!-- START -->
+<section id="start" class="on">
+  <h2>Velkommen</h2>
+  <p>Tre korte opgaver. Hver tager 5–10 minutter. Lav dem, når foredragsholderen siger til.</p>
+  <div class="card">
+    <h3>1 · Du er fondsforvalter</h3>
+    <p class="muted">Vælg fire aktier ud fra deres "X-posts". Se om du slår markedet over 10 år.</p>
+    <h3>2 · Kan du holde fast?</h3>
+    <p class="muted">Dine 100.000 kr. gennem 2000–2026 med rigtige afkast. Sælger du, når det brænder?</p>
+    <h3>3 · Din første million</h3>
+    <p class="muted">Hvad betyder startalder og omkostninger, når du er 65?</p>
+  </div>
+  <p class="small muted">Intet du gør her bliver gemt eller sendt nogen steder. Det er undervisning, ikke investeringsrådgivning.</p>
+  <button class="btn" data-go="g1">Start opgave 1</button>
+</section>
+
+<!-- GAME 1 -->
+<section id="g1">
+  <h2>1 · Du er fondsforvalter</h2>
+  <p>Du har fået en fond. Vælg <b>præcis 4 aktier</b>. Du betaler 1,5 % om året i omkostninger, ligesom en typisk aktiv fond.</p>
+  <div id="g1pick" class="grid two"></div>
+  <p><button class="btn" id="g1run" disabled>Kør 10 år</button> <span id="g1count" class="muted small" aria-live="polite">0 / 4 valgt</span></p>
+
+  <div id="g1res" class="hidden">
+    <div class="card">
+      <div class="grid three">
+        <div class="stat"><div class="lbl">Din fond, 10 år</div><div class="val" id="g1you"></div></div>
+        <div class="stat"><div class="lbl">Markedet, 10 år</div><div class="val" id="g1mkt"></div></div>
+        <div class="stat"><div class="lbl">År du slog markedet</div><div class="val" id="g1yrs"></div></div>
+      </div>
+      <p id="g1verdict" aria-live="polite" style="margin-top:12px;font-weight:600"></p>
+      <div class="tablewrap"><table id="g1tab"></table></div>
+    </div>
+    <div class="card" id="g1reveal">
+      <h3>Afsløring 🎲</h3>
+      <p>Overskrifterne betød <b>ingenting</b>. Hver akties afkast blev trukket tilfældigt: markedets afkast plus et tilfældigt udsving. Ingen aktie var bedre end en anden på forhånd.</p>
+      <p class="small muted">Og "min onkel arbejder der"? Handler du på et tip fra en, der kender selskabets hemmeligheder, er det insiderhandel. Det er ulovligt.</p>
+      <p>Alligevel slår nogle af jer markedet, og de føler sig dygtige. Tryk "Spil igen" med de samme aktier og se resultatet ændre sig.</p>
+      <button class="btn ghost" id="g1again">Spil igen, samme aktier</button>
+      <button class="btn ghost" id="g1reset">Vælg nye aktier</button>
+    </div>
+    <div class="card">
+      <h3>Lad 1.000 forvaltere spille</h3>
+      <p class="muted">1.000 forvaltere uden nogen dygtighed, alle med 1,5 % i omkostninger.</p>
+      <button class="btn" id="g1sim">Kør 1.000 forvaltere</button>
+      <div id="g1simres" class="hidden">
+        <div class="grid two" style="margin-top:10px">
+          <div class="stat"><div class="lbl">Slog markedet over 10 år</div><div class="val" id="s1"></div></div>
+          <div class="stat"><div class="lbl">Slog markedet de første 5 år i træk</div><div class="val" id="s2"></div></div>
+        </div>
+        <p id="s3" aria-live="polite" style="margin-top:10px"></p>
+        <p class="note small">I virkeligheden taber omkring <b>9 ud af 10</b> aktive aktiefonde til deres indeks over 10 år (S&amp;P Dow Jones Indices, SPIVA Europe). Og de få vindere bliver sjældent ved med at vinde.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Aktiespillet: "du kan kun slå markedet med en unfair fordel"</h3>
+      <p>Der er kun tre slags fordele:</p>
+      <ul>
+        <li><b>Information:</b> du ved noget, andre ikke ved.</li>
+        <li><b>Hastighed:</b> du reagerer, før prisen gør. Det er her, computere handler på millisekunder.</li>
+        <li><b>Regler:</b> du udnytter selve spillets eller markedets konstruktion.</li>
+      </ul>
+      <p>Uden en af dem er det mest held. Og når kun førstepladsen tæller, vinder typisk den, der tog <b>mest risiko</b>, ikke den dygtigste.</p>
+    </div>
+    <button class="btn" data-go="g2">Videre til opgave 2</button>
+  </div>
+</section>
+
+<!-- GAME 2 -->
+<section id="g2">
+  <h2>2 · Kan du holde fast?</h2>
+  <p>Det er 1. januar 2000. Du sætter <b>100.000 kr.</b> i en global portefølje. Afkastene er de <b>rigtige</b>, målt i kroner. Vælg din fordeling:</p>
+  <div class="grid three" id="g2mix">
+    <button class="pick" data-w="1"><b>100 % aktier</b><span>Hele verdens aktiemarked</span></button>
+    <button class="pick" data-w="0.6"><b>60 / 40</b><span>60 % aktier, 40 % obligationer</span></button>
+    <button class="pick" data-w="0.3"><b>30 / 70</b><span>30 % aktier, 70 % obligationer</span></button>
+  </div>
+
+  <div id="g2play" class="hidden">
+    <div class="card">
+      <div class="grid two">
+        <div class="stat"><div class="lbl" id="g2date"></div><div class="val" id="g2val"></div></div>
+        <div class="stat"><div class="lbl">Fra toppen</div><div class="val" id="g2dd"></div></div>
+      </div>
+      <canvas id="g2chart" role="img" aria-label="Porteføljens værdi over tid"></canvas>
+      <div class="legend"><span><i style="background:var(--you)"></i>Dig</span><span><i style="background:var(--muted)"></i>Hvis du var blevet siddende</span></div>
+      <p id="g2status" class="small muted" style="margin:8px 0 0"></p>
+    </div>
+    <div id="g2alert" class="alert hidden" role="alert">
+      <div class="small" id="g2alertdate"></div>
+      <div class="big" id="g2alertdd"></div>
+      <p id="g2alerttxt"></p>
+      <button class="btn bad" id="g2sell">Sælg aktierne</button>
+      <button class="btn ghost" id="g2hold">Bliv siddende</button>
+    </div>
+    <div id="g2back" class="card hidden">
+      <p><b>Du står uden for aktiemarkedet.</b> Dine penge står i obligationer. Siden du solgte, er aktierne gået <b id="g2since"></b>.</p>
+      <button class="btn" id="g2buy">Køb aktier igen</button>
+      <button class="btn ghost" id="g2wait">Vent et år mere</button>
+    </div>
+    <p><button class="btn" id="g2next">Næste år ▶</button> <button class="btn ghost" id="g2fast">Spol frem ⏩</button></p>
+  </div>
+
+  <div id="g2end" class="hidden">
+    <div class="card">
+      <h3>Resultat</h3>
+      <div class="grid two">
+        <div class="stat"><div class="lbl">Dig</div><div class="val" id="e1"></div></div>
+        <div class="stat"><div class="lbl">Hvis du var blevet siddende</div><div class="val" id="e2"></div></div>
+      </div>
+      <p id="e3" style="margin-top:10px;font-weight:600"></p>
+    </div>
+    <div class="card">
+      <h3>Alle blandinger, jan 2000 – <span id="asof"></span></h3>
+      <div class="tablewrap"><table id="g2tab"></table></div>
+      <p class="small muted" style="margin-top:8px">Max fald = største fald fra top til bund, målt månedsvis. Læg mærke til 2022, hvor aktier og obligationer faldt <i>samtidig</i>.</p>
+    </div>
+    <p class="note small">Aktier: MSCI ACWI Net Total Return i DKK. Obligationer: Bloomberg Global Aggregate Total Return, valutaafdækket (EUR-afdækket 2000–2011, DKK-afdækket fra 2012). Kilde: Bloomberg. Fast fordeling med månedlig genbalancering. Før skat og før fondens omkostninger. Historiske afkast er ingen garanti for fremtidige.</p>
+    <button class="btn ghost" id="g2restart">Prøv en anden fordeling</button>
+    <button class="btn" data-go="g3">Videre til opgave 3</button>
+  </div>
+</section>
+
+<!-- GAME 3 -->
+<section id="g3">
+  <h2>3 · Din første million</h2>
+  <p>Du sparer et fast beløb op hver måned, indtil du er 65.</p>
+  <div class="card">
+    <label class="row"><div class="top"><span>Pr. måned</span><span id="v_amt"></span></div><input type="range" id="amt" min="100" max="5000" step="100" value="500"></label>
+    <label class="row"><div class="top"><span>Startalder</span><span id="v_age"></span></div><input type="range" id="age" min="18" max="45" step="1" value="20"></label>
+    <label class="row"><div class="top"><span>Afkast pr. år før omkostninger</span><span id="v_ret"></span></div><input type="range" id="ret" min="2" max="9" step="0.5" value="6"></label>
+    <label class="row" style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="real"> Vis i dagens købekraft (2 % inflation)</label>
+  </div>
+  <div class="card">
+    <div class="stat" style="margin-bottom:8px"><div class="lbl">Billig indeksfond (0,07 % om året)</div><div class="big" id="r1"></div><div class="bar"><div id="b1"></div></div></div>
+    <div class="stat" style="margin-bottom:8px"><div class="lbl">Dyr fond (1,5 % om året)</div><div class="val" id="r2"></div><div class="bar"><div id="b2"></div></div></div>
+    <div class="stat" style="margin-bottom:8px"><div class="lbl">Billig fond, men du starter 10 år senere</div><div class="val" id="r3"></div><div class="bar"><div id="b3"></div></div></div>
+    <p class="small muted" id="r4" style="margin:6px 0 0"></p>
+  </div>
+  <div class="card">
+    <h3>Sådan gør man i praksis i Danmark</h3>
+    <ul>
+      <li><b>Aktiesparekonto:</b> lav skat på afkastet, men et loft over, hvor meget du kan sætte ind. Tjek årets loft på skat.dk.</li>
+      <li><b>Pension:</b> lav skat på afkastet, og pengene er bundet, til du når pensionsalderen.</li>
+      <li><b>ETF'er</b> uden for aktiesparekonto og pension: tjek SKATs positivliste, ellers kan beskatningen blive dyr.</li>
+    </ul>
+    <p class="small muted">Beregningen er før skat og bruger et fast afkast hvert år. Virkeligheden svinger, som du så i opgave 2.</p>
+  </div>
+  <div class="card">
+    <h3>Tre ting du skal huske</h3>
+    <ol>
+      <li><b>Start nu</b>, også med små beløb.</li>
+      <li><b>Køb hele verden billigt.</b> Så får du markedets afkast, som de fleste professionelle ikke formår at levere.</li>
+      <li><b>Vælg en risiko, du kan sove med</b>, og bliv siddende.</li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<script>
+const DATA = /*DATA*/null;
+
+/* ---------- tabs ---------- */
+function show(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===id));
+  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id));
+  window.scrollTo(0,0);
+  if(location.hash!=='#'+id)history.pushState(null,'','#'+id);
+  if(id==='g2') requestAnimationFrame(drawG2);
+}
+addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(['start','g1','g2','g3'].includes(h))show(h);else if(!h)show('start');});
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+if(['#g1','#g2','#g3'].includes(location.hash))show(location.hash.slice(1));
+
+/* ---------- helpers ---------- */
+const pct=(x,d=0)=>{const t=(Math.abs(x)*100).toFixed(d);return (+t===0?'':x>0?'+':'−')+t.replace('.',',')+' %';};
+const kr=x=>Math.round(x).toLocaleString('da-DK')+' kr.';
+function randn(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const MONTHS=['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
+const mlabel=s=>{const [y,m]=s.split('-');return MONTHS[+m-1]+' '+y;};
+
+/* ---------- GAME 1 ---------- */
+const STOCKS=[
+  ['Nordlys Biotech','"Kæmpe FDA-nyhed på vej 🚀🚀" — @AktieKongen, 48k følgere'],
+  ['Vestkyst Vind','"Ordrebogen eksploderer. Køb før alle andre opdager det."'],
+  ['Danica Shipping','"Fragtraterne er på vej op. Det her er bunden."'],
+  ['Hygge Foods','"Kedeligt selskab, stabilt udbytte. Sover godt om natten."'],
+  ['Øresund Bank','"Renterne stiger = bankerne tjener kassen 💰"'],
+  ['Pixel Gaming','"Nyt spil i 2027 bliver det største nogensinde!!!"'],
+  ['Fjord Medical','"Insiderne køber. Jeg siger det bare."'],
+  ['Copenhagen AI','"AI-selskab til 1/10 af prisen på de amerikanske. Gratis penge."'],
+  ['Jysk Beton','"Byggeriet i Europa står foran et boom."'],
+  ['Grøn Brint','"Fremtidens energi. Den bliver 10x, tro mig."'],
+  ['Nordic Retail','"Short-sælgerne er ved at blive presset ud 🩳🔥"'],
+  ['Lillebælt Tech','"Min onkel arbejder der. Der sker noget stort."'],
+];
+const FEE=0.015, MKT_MU=0.07, MKT_SD=0.16, IDIO_SD=0.30, YEARS=10;
+let picks=new Set();
+const g1pick=document.getElementById('g1pick');
+STOCKS.forEach(([n,h],i)=>{
+  const b=document.createElement('button');b.className='pick';b.setAttribute('aria-pressed','false');
+  b.innerHTML=`<b>${n}</b><span>${h}</span>`;
+  b.onclick=()=>{
+    if(picks.has(i))picks.delete(i);else if(picks.size<4)picks.add(i);
+    g1pick.querySelectorAll('.pick').forEach((x,j)=>x.setAttribute('aria-pressed',picks.has(j)));
+    document.getElementById('g1count').textContent=picks.size+' / 4 valgt';
+    document.getElementById('g1run').disabled=picks.size!==4;
+  };
+  g1pick.appendChild(b);
+});
+function simFund(n){ // returns [{m,f}] per year; fund = mean of n stocks - fee
+  const out=[];
+  for(let y=0;y<YEARS;y++){
+    const m=MKT_MU+MKT_SD*randn();
+    let s=0;for(let k=0;k<n;k++)s+=Math.max(-0.95,m+IDIO_SD*randn());
+    out.push({m,f:s/n-FEE});
+  }
+  return out;
+}
+function runG1(){
+  const ys=simFund(4);let cy=1,cm=1,beat=0;
+  let rows='<tr><th>År</th><th>Din fond</th><th>Markedet</th><th></th></tr>';
+  ys.forEach((r,i)=>{cy*=1+r.f;cm*=1+r.m;const w=r.f>r.m;if(w)beat++;
+    rows+=`<tr><td>${i+1}</td><td>${pct(r.f,1)}</td><td>${pct(r.m,1)}</td><td>${w?'✅':'❌'}</td></tr>`;});
+  document.getElementById('g1tab').innerHTML=rows;
+  const y=document.getElementById('g1you');y.textContent=pct(cy-1);y.className='val '+(cy>cm?'good':'bad');
+  document.getElementById('g1mkt').textContent=pct(cm-1);
+  document.getElementById('g1yrs').textContent=beat+' af 10';
+  document.getElementById('g1verdict').textContent=cy>cm
+    ?'🏆 Du slog markedet! Ræk hånden op. Var det dygtighed?'
+    :'Du tabte til markedet. Det gør de fleste fonde.';
+  document.getElementById('g1res').classList.remove('hidden');
+  document.getElementById('g1you').scrollIntoView({behavior:'smooth',block:'center'});
+}
+document.getElementById('g1run').onclick=runG1;
+document.getElementById('g1again').onclick=runG1;
+document.getElementById('g1reset').onclick=()=>{picks.clear();document.getElementById('g1simres').classList.add('hidden');g1pick.querySelectorAll('.pick').forEach(x=>x.setAttribute('aria-pressed','false'));
+  document.getElementById('g1count').textContent='0 / 4 valgt';document.getElementById('g1run').disabled=true;
+  document.getElementById('g1res').classList.add('hidden');window.scrollTo(0,0);};
+document.getElementById('g1sim').onclick=()=>{
+  let beat10=0,stars=0,starsNext=0;
+  for(let i=0;i<1000;i++){
+    const ys=simFund(4);let cy=1,cm=1;ys.forEach(r=>{cy*=1+r.f;cm*=1+r.m;});
+    if(cy>cm)beat10++;
+    if(ys.slice(0,5).every(r=>r.f>r.m)){stars++;
+      if(ys.slice(5).every(r=>r.f>r.m))starsNext++;}
+  }
+  document.getElementById('s1').textContent=beat10+' af 1.000';
+  document.getElementById('s2').textContent=stars+' af 1.000';
+  document.getElementById('s3').innerHTML=stars
+    ?`De ${stars} "stjerneforvaltere" kommer i avisen og får kundernes penge. Men hvor mange af dem slog markedet 5 år i træk <i>igen</i>? <b>${starsNext}</b>. De havde aldrig noget særligt, kun held.`
+    :'Ingen slog markedet 5 år i træk denne gang. Prøv igen.';
+  document.getElementById('g1simres').classList.remove('hidden');
+};
+
+/* ---------- GAME 2 ---------- */
+const M=DATA.monthly; // [ 'YYYY-MM', eqRet, bdRet ]
+document.getElementById('asof').textContent=mlabel(DATA.source.asof);
+const TRIG=[-0.15,-0.25,-0.35,-0.45];
+let G=null;
+function startG2(w){
+  G={w,i:0,inEq:true,v:[100000],h:[100000],peak:100000,trig:0,eqIdx:1,eqIdxAtSell:1,alerts:0,sells:0,trigs:TRIG.map(t=>t*Math.max(w,0.5))};
+  document.querySelectorAll('#g2mix .pick').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.w===w));
+  ['g2play'].forEach(id=>document.getElementById(id).classList.remove('hidden'));
+  ['g2end','g2alert','g2back'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  setBtns(true);updG2();drawG2();
+}
+document.querySelectorAll('#g2mix .pick').forEach(b=>b.onclick=()=>startG2(+b.dataset.w));
+function stepMonth(){ // returns 'alert' | 'yearend' | 'end'
+  const [mo,e,b]=M[G.i];
+  const w=G.inEq?G.w:0;
+  const nv=G.v[G.v.length-1]*(1+w*e+(1-w)*b);
+  const nh=G.h[G.h.length-1]*(1+G.w*e+(1-G.w)*b);
+  G.v.push(nv);G.h.push(nh);G.eqIdx*=1+e;G.i++;
+  if(nv>G.peak)G.peak=nv;
+  // advarsler udløses af faldet fra toppen inden for de seneste 24 måneder (så hvert krak, også 2008, giver en),
+  // med tærskler skaleret til aktieandelen (så også 30/70 bliver testet)
+  const rp=Math.max(...G.v.slice(-25)),dd=nv/rp-1;
+  if(dd>-0.08)G.trig=0;
+  if(G.i>=M.length)return 'end';
+  const T=G.trigs;
+  if(G.inEq&&G.trig<T.length&&dd<=T[G.trig]){while(G.trig<T.length&&dd<=T[G.trig])G.trig++;return 'alert';}
+  if(mo.endsWith('-12'))return 'yearend';
+  return null;
+}
+function runYear(){
+  let r;
+  do{r=stepMonth();}while(!r);
+  updG2();drawG2();
+  if(r==='end')return endG2();
+  if(r==='alert')return showAlert();
+  if(!G.inEq)showBack();
+}
+function fastForward(){
+  document.getElementById('g2alert').classList.add('hidden');document.getElementById('g2back').classList.add('hidden');
+  let r;do{r=stepMonth();}while(r!=='end'&&r!=='alert'&&!(r==='yearend'&&!G.inEq));
+  updG2();drawG2();
+  if(r==='end')return endG2();
+  if(r==='alert')return showAlert();
+  showBack();
+}
+function setBtns(on){document.getElementById('g2next').disabled=!on;document.getElementById('g2fast').disabled=!on;}
+function showAlert(){
+  G.alerts++;
+  const v=G.v[G.v.length-1],dd=v/G.peak-1;
+  document.getElementById('g2alertdate').textContent=mlabel(M[G.i-1][0]).toUpperCase();
+  document.getElementById('g2alertdd').textContent=pct(dd)+' fra toppen';
+  const lost=G.peak-v;
+  document.getElementById('g2alerttxt').innerHTML=`Du har tabt <b>${kr(lost)}</b> siden toppen. Avisen skriver "krise". Dine venner har solgt. Hvad gør du?`;
+  document.getElementById('g2alert').classList.remove('hidden');setBtns(false);
+  document.getElementById('g2alert').scrollIntoView({behavior:'smooth',block:'center'});
+}
+document.getElementById('g2sell').onclick=()=>{G.inEq=false;G.sells++;G.soldAt=G.i;G.eqIdxAtSell=G.eqIdx;
+  document.getElementById('g2alert').classList.add('hidden');setBtns(true);updG2();};
+document.getElementById('g2hold').onclick=()=>{document.getElementById('g2alert').classList.add('hidden');setBtns(true);updG2();};
+function showBack(){
+  document.getElementById('g2since').textContent=pct(G.eqIdx/G.eqIdxAtSell-1);
+  document.getElementById('g2back').classList.remove('hidden');setBtns(false);
+}
+document.getElementById('g2buy').onclick=()=>{G.inEq=true;
+  // de tærskler, der allerede er passeret, skal ikke udløse en advarsel igen lige efter tilbagekøbet
+  {const rp=Math.max(...G.v.slice(-25)),dd=G.v[G.v.length-1]/rp-1;G.trig=G.trigs.filter(t=>dd<=t).length;}
+  document.getElementById('g2back').classList.add('hidden');setBtns(true);updG2();};
+document.getElementById('g2wait').onclick=()=>{document.getElementById('g2back').classList.add('hidden');setBtns(true);runYear();};
+document.getElementById('g2next').onclick=runYear;
+document.getElementById('g2fast').onclick=fastForward;
+function updG2(){
+  const v=G.v[G.v.length-1];
+  document.getElementById('g2date').textContent=G.i?'Udgangen af '+mlabel(M[G.i-1][0]):'1. januar 2000';
+  document.getElementById('g2val').textContent=kr(v);
+  const dd=v/G.peak-1,el=document.getElementById('g2dd');el.textContent=pct(dd);el.className='val '+(dd<-0.1?'bad':'');
+  document.getElementById('g2status').textContent=G.inEq?`Du ejer: ${Math.round(G.w*100)} % aktier, ${Math.round((1-G.w)*100)} % obligationer`:'Du har solgt dine aktier. Alt står i obligationer.';
+}
+function drawG2(){
+  const c=document.getElementById('g2chart');if(!c||!G||!c.offsetWidth)return;
+  const dpr=window.devicePixelRatio||1,W=c.offsetWidth,H=c.offsetHeight;
+  c.width=W*dpr;c.height=H*dpr;const x=c.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);
+  const n=M.length+1,all=G.v.concat(G.h);
+  const lo=Math.log(Math.min(...all,60000)),hi=Math.log(Math.max(...all,200000));
+  const L=44,R=8,T=8,B=20;
+  const px=i=>L+(W-L-R)*i/(n-1),py=v=>T+(H-T-B)*(1-(Math.log(v)-lo)/(hi-lo));
+  x.font='11px system-ui';x.fillStyle=css('--muted');x.strokeStyle=css('--line');x.lineWidth=1;
+  [50000,100000,200000,400000,800000].forEach(t=>{if(Math.log(t)<lo||Math.log(t)>hi)return;const y=py(t);
+    x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.fillText((t/1000)+'k',4,y+4);});
+  [2000,2005,2010,2015,2020,2025].forEach(yr=>{const i=(yr-2000)*12;x.fillText(yr,px(i)-12,H-4);});
+  const line=(arr,col,wd)=>{x.strokeStyle=col;x.lineWidth=wd;x.beginPath();arr.forEach((v,i)=>i?x.lineTo(px(i),py(v)):x.moveTo(px(i),py(v)));x.stroke();};
+  line(G.h,css('--muted'),1.5);line(G.v,css('--you'),2.5);
+}
+window.addEventListener('resize',drawG2);
+function endG2(){
+  setBtns(false);document.getElementById('g2alert').classList.add('hidden');document.getElementById('g2back').classList.add('hidden');
+  const v=G.v[G.v.length-1],h=G.h[G.h.length-1];
+  document.getElementById('e1').textContent=kr(v);document.getElementById('e2').textContent=kr(h);
+  document.getElementById('e3').textContent=Math.abs(v-h)<1?(G.alerts?`Du blev siddende gennem ${G.alerts} advarsler. Det er sværere, end det lyder.`:'Du blev siddende hele vejen.')
+    :v<h?`At sælge i panik kostede dig ${kr(h-v)}`:`Du ramte timingen og vandt ${kr(v-h)} Kunne du gøre det igen?`;
+  let rows='<tr><th>Fordeling</th><th>Slutværdi</th><th>Pr. år</th><th>Værste år</th><th>Max fald</th></tr>';
+  [[1,'100 % aktier'],[0.6,'60 / 40'],[0.3,'30 / 70'],[0,'100 % obligationer']].forEach(([w,lbl])=>{
+    let val=100000,peak=val,mdd=0,yr=1,worst=1;
+    M.forEach(([mo,e,b])=>{const g=1+w*e+(1-w)*b;val*=g;yr*=g;peak=Math.max(peak,val);mdd=Math.min(mdd,val/peak-1);
+      if(mo.endsWith('-12')){worst=Math.min(worst,yr);yr=1;}});
+    const cagr=Math.pow(val/100000,12/M.length)-1;
+    rows+=`<tr><td>${lbl}</td><td>${kr(val)}</td><td>${pct(cagr,1)}</td><td>${pct(worst-1)}</td><td>${pct(mdd)}</td></tr>`;});
+  document.getElementById('g2tab').innerHTML=rows;
+  document.getElementById('g2end').classList.remove('hidden');
+  document.getElementById('g2end').scrollIntoView({behavior:'smooth',block:'start'});
+}
+document.getElementById('g2restart').onclick=()=>{document.getElementById('g2play').classList.add('hidden');document.getElementById('g2end').classList.add('hidden');
+  document.querySelectorAll('#g2mix .pick').forEach(b=>b.setAttribute('aria-pressed','false'));G=null;window.scrollTo(0,0);};
+
+/* ---------- GAME 3 ---------- */
+function fv(amt,years,r){let v=0;const m=Math.pow(1+r,1/12)-1;for(let i=0;i<years*12;i++)v=v*(1+m)+amt;return v;}
+function updG3(){
+  const amt=+document.getElementById('amt').value,age=+document.getElementById('age').value,ret=+document.getElementById('ret').value/100;
+  const real=document.getElementById('real').checked,yrs=65-age,yrsLate=Math.max(0,yrs-10);
+  document.getElementById('v_amt').textContent=kr(amt);document.getElementById('v_age').textContent=age+'-årig';
+  document.getElementById('v_ret').textContent=document.getElementById('ret').value.replace('.',',')+' %';
+  const defl=y=>real?Math.pow(1.02,y):1;
+  const a=fv(amt,yrs,ret-0.0007)/defl(yrs),b=fv(amt,yrs,ret-0.015)/defl(yrs),c=fv(amt,yrsLate,ret-0.0007)/defl(yrs);
+  document.getElementById('r1').textContent=kr(a);document.getElementById('r2').textContent=kr(b);document.getElementById('r3').textContent=kr(c);
+  [['b1',a],['b2',b],['b3',c]].forEach(([id,v])=>document.getElementById(id).style.width=(100*v/a)+'%');
+  let dep=0;for(let i=0;i<yrs*12;i++)dep+=amt/(real?Math.pow(1.02,i/12):1);
+  document.getElementById('r4').textContent=`Du indbetaler selv ${kr(dep)}${real?' i dagens kroner':''} over ${yrs} år. Resten er renters rente. Den dyre fond koster dig ${kr(a-b)}`;
+}
+['amt','age','ret','real'].forEach(id=>document.getElementById(id).addEventListener('input',updG3));
+updG3();
+</script>
+</body>
+</html>
