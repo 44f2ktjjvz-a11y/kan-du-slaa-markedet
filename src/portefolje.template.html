@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1f">
+<title>Byg din portefølje</title>
+<meta name="description" content="Sammensæt en portefølje af aktier, obligationer og sektorer, og se hvordan den har klaret sig og kan klare sig.">
+<style>
+:root{
+  --bg:#070b17;--bg2:#0d1428;--card:rgba(255,255,255,.045);--card2:rgba(255,255,255,.08);--line:rgba(255,255,255,.09);
+  --ink:#f4f6fb;--muted:#8d97b0;--you1:#8b5cff;--you2:#22d3ee;--you:#a78bfa;--bench:#cbd5e1;--bad:#ff5d73;--good:#34d399;--gold:#fbbf24;
+  --eq:#6d8cff;--bd:#f2b56b;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:radial-gradient(900px 600px at 100% -10%,rgba(139,92,255,.22),transparent 60%),radial-gradient(700px 500px at -20% 30%,rgba(34,211,238,.12),transparent 60%),var(--bg);background-attachment:fixed}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 120px}
+a{color:var(--you2)}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.top a{font-size:.85rem;color:var(--muted);text-decoration:none}
+h1{font-size:1.9rem;line-height:1.1;margin:8px 0 6px;letter-spacing:-.02em}
+.grad{background:linear-gradient(90deg,var(--you1),var(--you2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0;backdrop-filter:blur(8px)}
+.step{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.step b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--you1),var(--you2));font-size:.9rem;color:#fff;flex:0 0 28px}
+.step h2{font-size:1.1rem;margin:0}
+.muted{color:var(--muted)}.small{font-size:.85rem}
+/* mix */
+.mixnum{display:flex;justify-content:space-between;align-items:flex-end;margin:4px 0 10px}
+.mixnum div{font-weight:800;font-size:2.1rem;line-height:1;letter-spacing:-.03em}
+.mixnum span{display:block;font-size:.78rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:4px}
+.split{height:18px;border-radius:9px;overflow:hidden;display:flex;background:var(--card2)}
+.split i{display:block;height:100%;transition:width .35s cubic-bezier(.2,.8,.2,1)}
+.split .e{background:linear-gradient(90deg,#5b7cff,#8b5cff)}.split .b{background:linear-gradient(90deg,#f2b56b,#f59e0b)}
+input[type=range]{width:100%;margin:16px 0 4px;accent-color:var(--you1);height:28px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:999px;padding:8px 13px;font:inherit;font-size:.88rem;cursor:pointer;transition:all .2s}
+.chip[aria-pressed="true"]{background:linear-gradient(135deg,var(--you1),var(--you2));border-color:transparent;color:#fff;font-weight:600}
+/* segmented */
+.seg{display:flex;background:var(--card2);border-radius:14px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:.92rem;padding:10px 8px;border-radius:10px;cursor:pointer;transition:all .2s}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#0a0f1f}
+/* sectors */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.sbtn{position:relative;text-align:left;border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:14px;padding:10px 12px;font:inherit;cursor:pointer;overflow:hidden;transition:all .2s}
+.sbtn b{display:block;font-size:.95rem}.sbtn span{font-size:.78rem;color:var(--muted)}
+.sbtn[aria-pressed="true"]{border-color:var(--you1);box-shadow:0 0 0 1.5px var(--you1) inset,0 6px 24px rgba(139,92,255,.25)}
+.sbtn[aria-pressed="true"]::after{content:"↑";position:absolute;right:10px;top:8px;font-weight:800;color:var(--you2)}
+.bars{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.brow{display:grid;grid-template-columns:104px 1fr 46px;align-items:center;gap:8px;font-size:.8rem}
+.brow .nm{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{position:relative;height:12px;border-radius:6px;background:var(--card2)}
+.track .bm{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:rgba(255,255,255,.16)}
+.track .yw{position:absolute;left:0;top:3px;bottom:3px;border-radius:4px;background:linear-gradient(90deg,var(--you1),var(--you2));transition:width .35s cubic-bezier(.2,.8,.2,1)}
+.brow .d{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.up{color:var(--good)}.dn{color:var(--bad)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:14px;height:6px;border-radius:3px;margin-right:6px;vertical-align:middle}
+/* run */
+.cta{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--bg) 60%,transparent);z-index:5}
+.cta button{display:block;width:100%;max-width:608px;margin:0 auto;border:0;border-radius:16px;padding:16px;font:inherit;font-weight:700;font-size:1.05rem;color:#fff;cursor:pointer;
+  background:linear-gradient(90deg,var(--you1),var(--you2));box-shadow:0 10px 30px rgba(139,92,255,.35)}
+/* results */
+#res{display:none}
+#res.on{display:block;animation:rise .5s ease}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+canvas{display:block;width:100%;touch-action:pan-y}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.tile{background:var(--card2);border-radius:16px;padding:12px 13px;position:relative;overflow:hidden}
+.tile .lbl{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.tile .v{font-size:1.55rem;font-weight:800;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:tabular-nums}
+.tile .vs{font-size:.8rem;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.tile.wide{grid-column:1/-1}
+.tile:not(.wide) .v{font-size:clamp(1rem,5.2vw,1.3rem);white-space:nowrap}
+.sw input:focus-visible+span{outline:2px solid var(--you2);outline-offset:2px}
+.msg{border-radius:16px;padding:14px 15px;margin-top:14px;background:linear-gradient(135deg,rgba(139,92,255,.16),rgba(34,211,238,.1));border:1px solid rgba(139,92,255,.3);font-size:.93rem}
+.msg b{color:#fff}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;font-size:.9rem}
+.sw{position:relative;width:50px;height:30px;flex:0 0 50px}
+.sw input{opacity:0;width:0;height:0}
+.sw span{position:absolute;inset:0;border-radius:15px;background:var(--card2);border:1px solid var(--line);transition:.2s;cursor:pointer}
+.sw span::before{content:"";position:absolute;width:24px;height:24px;left:2px;top:2px;border-radius:50%;background:#fff;transition:.2s}
+.sw input:checked+span{background:linear-gradient(90deg,var(--you1),var(--you2))}
+.sw input:checked+span::before{transform:translateX(20px)}
+.foot{font-size:.76rem;color:var(--muted);margin-top:18px;line-height:1.5}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="./">← Alle opgaver</a><span class="small muted">Undervisning, ikke rådgivning</span></div>
+  <h1>Byg din <span class="grad">portefølje</span></h1>
+  <p class="lead">Vælg din fordeling og dine sektorer. Se så, hvordan den <i>har</i> klaret sig siden 2001, og hvordan den <i>kan</i> klare sig i fremtiden.</p>
+
+  <!-- STEP 1 -->
+  <section class="card">
+    <div class="step"><b>1</b><h2>Aktier og obligationer</h2></div>
+    <div class="mixnum">
+      <div><span style="color:#93a8ff">Aktier</span><em id="eqTxt" style="font-style:normal"></em></div>
+      <div style="text-align:right"><span style="color:#f2b56b">Obligationer</span><em id="bdTxt" style="font-style:normal"></em></div>
+    </div>
+    <div class="split"><i class="e" id="eqBar"></i><i class="b" id="bdBar"></i></div>
+    <input type="range" id="mix" min="0" max="100" step="10" value="60" aria-label="Aktieandel">
+    <div class="chips" id="presets">
+      <button class="chip" data-v="10">Konservativ</button>
+      <button class="chip" data-v="40">Balanceret</button>
+      <button class="chip" data-v="60">Vækst</button>
+      <button class="chip" data-v="80">Offensiv</button>
+      <button class="chip" data-v="100">Kun aktier</button>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="card">
+    <div class="step"><b>2</b><h2>Aktiedelen</h2></div>
+    <div class="seg" id="mode">
+      <button aria-pressed="true" data-m="bench">Hele markedet</button>
+      <button aria-pressed="false" data-m="tilt">Vælg sektorer</button>
+    </div>
+    <p class="small muted" id="modeTxt" style="margin:12px 0 0"></p>
+    <div id="tiltBox" class="hidden">
+      <div class="sgrid" id="sgrid"></div>
+      <label class="small" style="display:block;margin-top:14px">
+        <div style="display:flex;justify-content:space-between;font-weight:700"><span>Hvor meget vil du overvægte?</span><span id="tTxt"></span></div>
+        <input type="range" id="tilt" min="5" max="30" step="5" value="15" aria-label="Samlet overvægt">
+      </label>
+      <div class="bars" id="bars"></div>
+      <div class="legend"><span><i style="background:rgba(255,255,255,.25)"></i>Markedet</span><span><i style="background:linear-gradient(90deg,var(--you1),var(--you2))"></i>Dig</span><span>Tal = procentpoint af aktiedelen</span></div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="res">
+    <div class="seg" id="view" style="margin-top:6px">
+      <button aria-pressed="true" data-v="hist">Sådan gik det</button>
+      <button aria-pressed="false" data-v="mc">Sådan kan det gå</button>
+    </div>
+
+    <div id="vHist" class="card">
+      <div class="small muted">100.000 kr. investeret i januar 2001</div>
+      <canvas id="cHist" height="230" role="img" aria-label="Porteføljens værdi over tid mod benchmark"></canvas>
+      <div class="small muted" style="margin-top:6px">Fald fra toppen undervejs</div>
+      <canvas id="cDD" height="90" role="img" aria-label="Fald fra toppen over tid"></canvas>
+      <div class="legend"><span><i style="background:linear-gradient(90deg,var(--you1),var(--you2))"></i>Din portefølje</span><span><i style="background:var(--bench)"></i>Benchmark</span></div>
+      <div class="tiles" id="tHist"></div>
+      <div class="msg" id="mHist" aria-live="polite"></div>
+    </div>
+
+    <div id="vMC" class="card hidden">
+      <div class="seg" id="hor">
+        <button aria-pressed="false" data-y="1">1 år</button>
+        <button aria-pressed="false" data-y="5">5 år</button>
+        <button aria-pressed="true" data-y="10">10 år</button>
+        <button aria-pressed="false" data-y="20">20 år</button>
+      </div>
+      <div class="small muted" style="margin-top:12px" id="mcHead"></div>
+      <canvas id="cMC" height="250" role="img" aria-label="Udfaldsrum for 1.000 simulerede fremtider"></canvas>
+      <div class="legend"><span><i style="background:rgba(139,92,255,.35)"></i>90 % af fremtiderne</span><span><i style="background:rgba(139,92,255,.7)"></i>Halvdelen</span><span><i style="background:#fff"></i>Midterste</span><span><i style="background:var(--bench)"></i>Benchmark, midterste</span></div>
+      <div class="toggle" id="hindRow"><span><b id="hindLbl">Bagklogskab</b><br><span class="small muted">Antag at fremtiden giver sektorerne samme afkast som fortiden</span></span>
+        <label class="sw"><input type="checkbox" id="hind" aria-labelledby="hindLbl"><span></span></label></div>
+      <div class="tiles" id="tMC"></div>
+      <div class="msg" id="mMC" aria-live="polite"></div>
+    </div>
+
+    <p class="foot" id="foot"></p>
+  </section>
+</div>
+<div class="cta"><button id="run">Kør simulationen ▶</button></div>
+
+<script>
+const DATA=/*DATA*/null;
+const M=DATA.months, SEC=DATA.sectors, NS=SEC.length;
+const FEE_EQ=0.0007, FEE_BD=0.0010, FEE_TILT=0.0025;   // indeksfond, obligationsfond, ekstra for sektor-ETF'er på den overvægtede del
+const N_PATHS=1000, BLOCK=12;
+const $=id=>document.getElementById(id);
+const pct=(x,d=1)=>{const t=(Math.abs(x)*100).toFixed(d);return (+t===0?'':x<0?'−':'')+t.replace('.',',')+' %';};
+const spct=(x,d=1)=>{const t=(Math.abs(x)*100).toFixed(d);return (+t===0?'':x<0?'−':'+')+t.replace('.',',')+' %';};
+const kr=x=>Math.round(x).toLocaleString('da-DK')+' kr.';
+const kkr=x=>x>=1e6?(x/1e6).toFixed(2).replace('.',',')+' mio. kr.':Math.round(x/1000).toLocaleString('da-DK')+'.000 kr.';
+const pp=x=>spct(x,1).replace('\u00a0%','\u00a0pct.-point');
+const [ay,am]=DATA.asof.split('-');
+const MON=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+
+/* ---------- state ---------- */
+const S={w:0.6,mode:'bench',picks:new Set(),T:0.15,view:'hist',H:10,hind:false,ran:false};
+
+/* ---------- step 1 ---------- */
+function updMix(){
+  $('eqTxt').textContent=Math.round(S.w*100)+' %';$('bdTxt').textContent=Math.round((1-S.w)*100)+' %';
+  $('eqBar').style.width=S.w*100+'%';$('bdBar').style.width=(1-S.w)*100+'%';
+  document.querySelectorAll('#presets .chip').forEach(c=>c.setAttribute('aria-pressed',+c.dataset.v===Math.round(S.w*100)));
+  rerun();
+}
+$('mix').oninput=e=>{S.w=+e.target.value/100;updMix();};
+document.querySelectorAll('#presets .chip').forEach(c=>c.onclick=()=>{S.w=+c.dataset.v/100;$('mix').value=c.dataset.v;updMix();});
+
+/* ---------- step 2 ---------- */
+SEC.forEach((s,i)=>{const b=document.createElement('button');b.className='sbtn';b.setAttribute('aria-pressed','false');
+  b.innerHTML=`<b>${s.name}</b><span>${pct(s.w,0)} af markedet</span>`;
+  b.onclick=()=>{if(S.picks.has(i))S.picks.delete(i);else{if(S.picks.size>=3)return flash(b);S.picks.add(i);}updSec();};
+  $('sgrid').appendChild(b);});
+function flash(b){b.animate([{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(5px)'},{transform:'translateX(0)'}],{duration:250});
+  $('modeTxt').textContent='Du kan vælge op til 3 sektorer.';}
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{S.mode=b.dataset.m;
+  document.querySelectorAll('#mode button').forEach(x=>x.setAttribute('aria-pressed',x===b));updSec();});
+$('tilt').oninput=e=>{S.T=+e.target.value/100;updSec();};
+function activeWeights(){ // overvægt i valgte sektorer, undervægt pro rata i resten (andel af aktiedelen)
+  const a=new Array(NS).fill(0);
+  if(S.mode!=='tilt'||!S.picks.size)return a;
+  const k=S.picks.size;let rest=0;SEC.forEach((s,i)=>{if(!S.picks.has(i))rest+=s.w;});
+  SEC.forEach((s,i)=>{a[i]=S.picks.has(i)?S.T/k:-S.T*s.w/rest;});
+  return a;
+}
+function updSec(){
+  const tilt=S.mode==='tilt';$('tiltBox').classList.toggle('hidden',!tilt);
+  document.querySelectorAll('.sbtn').forEach((b,i)=>b.setAttribute('aria-pressed',S.picks.has(i)));
+  $('tTxt').textContent='+'+Math.round(S.T*100)+' pct.-point i alt';
+  $('modeTxt').innerHTML=!tilt?'Du ejer alle sektorer i samme forhold som verdensmarkedet (MSCI ACWI). Det er <b>benchmark</b>.'
+    :S.picks.size?'De sektorer, du ikke vælger, bliver automatisk mindre i forhold til deres størrelse i markedet.':'Tryk på 1–3 sektorer, du tror på.';
+  const a=activeWeights(),mx=Math.max(...SEC.map((s,i)=>s.w+a[i]),0.3);
+  $('bars').innerHTML=SEC.map((s,i)=>{const y=s.w+a[i],d=a[i];
+    return `<div class="brow"><span class="nm">${s.name}</span><div class="track"><div class="bm" style="width:${100*s.w/mx}%"></div><div class="yw" style="width:${100*y/mx}%"></div></div><span class="d ${d>0.0005?'up':d<-0.0005?'dn':''}">${Math.abs(d)<0.0005?'':spct(d,Math.abs(d*100-Math.round(d*100))>0.05?1:0).replace(' %','')}</span></div>`;}).join('');
+  rerun();
+}
+
+/* ---------- engine ---------- */
+function eqRet(r,a){let eq=r[1];for(let i=0;i<NS;i++)if(a[i])eq+=a[i]*(r[3+i]-r[1]);return eq;}
+// "Ingen kender vinderne": sektorvalgenes merafkast sættes til nul i log-afkast (renters rente),
+// så hverken offensive eller defensive valg får en skjult fordel. Kun risikoen bliver tilbage.
+function logShift(a){let m=0;for(const r of M)m+=Math.log(1+eqRet(r,a))-Math.log(1+r[1]);return Math.exp(-m/M.length);}
+function monthRet(r,a,w,cost,shift=1){ // r=[m,eq,bd,...sektorer]
+  const eq=shift===1?eqRet(r,a):(1+eqRet(r,a))*shift-1;
+  return w*(eq-cost/12)+(1-w)*(r[2]-FEE_BD/12);
+}
+function stats(rets){let v=1,pk=1,mdd=0,s=0,s2=0;const path=[1],dd=[0];
+  for(const x of rets){v*=1+x;pk=Math.max(pk,v);const d=v/pk-1;mdd=Math.min(mdd,d);path.push(v);dd.push(d);s+=x;s2+=x*x;}
+  const n=rets.length,mu=s/n,vol=Math.sqrt(Math.max(0,s2/n-mu*mu))*Math.sqrt(12),cagr=Math.pow(v,12/n)-1;
+  return {end:v,cagr,vol,mdd,ratio:vol?cagr/vol:0,path,dd};}
+function portCost(a){return FEE_EQ+FEE_TILT*a.reduce((t,x)=>t+Math.max(0,x),0);}
+function history(){
+  const a=activeWeights(),c=portCost(a),z=new Array(NS).fill(0);
+  return {you:stats(M.map(r=>monthRet(r,a,S.w,c))),bench:stats(M.map(r=>monthRet(r,z,S.w,FEE_EQ)))};
+}
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let SEED=Math.floor(Math.random()*1e9);
+function monteCarlo(hind=S.hind){
+  const a=activeWeights(),c=portCost(a),z=new Array(NS).fill(0),n=S.H*12,rand=rng(SEED),shift=hind?1:logShift(a);
+  const Mn=M.length,band=new Float32Array(N_PATHS*(n+1)),ends=[],bends=[],mdds=[],beats=[];let loss=0,beat=0;
+  const bPaths=new Float32Array(N_PATHS*(n+1));
+  for(let p=0;p<N_PATHS;p++){let v=1,bv=1,pk=1,mdd=0,t=0,start=0;band[p*(n+1)]=1;bPaths[p*(n+1)]=1;
+    for(let k=0;k<n;k++){if(k%BLOCK===0)start=Math.floor(rand()*Mn);const r=M[(start+k%BLOCK)%Mn];   // trækker hele 12-månedersperioder fra historien
+      v*=1+monthRet(r,a,S.w,c,shift);bv*=1+monthRet(r,z,S.w,FEE_EQ);
+      pk=Math.max(pk,v);mdd=Math.min(mdd,v/pk-1);band[p*(n+1)+k+1]=v;bPaths[p*(n+1)+k+1]=bv;}
+    ends.push(v);bends.push(bv);mdds.push(mdd);if(v<1)loss++;if(v>bv)beat++;}
+  const qi=p=>Math.round(p*(N_PATHS-1)),q=(arr,p)=>[...arr].sort((x,y)=>x-y)[qi(p)];
+  const fan=[];for(let k=0;k<=n;k++){const col=[],bc=[];for(let p=0;p<N_PATHS;p++){col.push(band[p*(n+1)+k]);bc.push(bPaths[p*(n+1)+k]);}
+    col.sort((x,y)=>x-y);bc.sort((x,y)=>x-y);const g=f=>col[qi(f)];fan.push([g(.05),g(.25),g(.5),g(.75),g(.95),bc[qi(.5)]]);}
+  return {n,fan,med:q(ends,.5),p5:q(ends,.05),p95:q(ends,.95),bmed:q(bends,.5),mddMed:q(mdds,.5),mddP5:q(mdds,.05),loss:loss/N_PATHS,beat:beat/N_PATHS,tilt:S.w>0&&a.some(x=>x)};
+}
+
+/* ---------- charts ---------- */
+function setup(cv){const dpr=devicePixelRatio||1,W=cv.clientWidth;if(!cv.dataset.h)cv.dataset.h=cv.getAttribute('height');const H=+cv.dataset.h;cv.style.height=H+'px';cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return {x,W,H};}
+function gradYou(x,W){const g=x.createLinearGradient(0,0,W,0);g.addColorStop(0,'#8b5cff');g.addColorStop(1,'#22d3ee');return g;}
+function animate(draw,ms=900){const t0=performance.now();const f=t=>{const p=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-p,3);draw(e);if(p<1)requestAnimationFrame(f);};requestAnimationFrame(f);}
+function yearsAxis(x,px,H,n,startY,stepY){x.fillStyle='#6b7591';x.font='11px system-ui';x.textAlign='center';
+  for(let y=0;y*12<=n;y+=stepY){x.textAlign=y===0?'left':(y+stepY)*12>n?'right':'center';x.fillText(startY===null?(y+' år'):(startY+y),px(y*12),H-4);}}
+function drawHist(h){
+  const {x,W,H}=setup($('cHist')),L=50,R=8,T=10,B=20,n=h.you.path.length-1;
+  const all=h.you.path.concat(h.bench.path),lo=Math.log(Math.min(...all)*.95),hi=Math.log(Math.max(...all)*1.05);
+  const px=i=>L+(W-L-R)*i/n,py=v=>T+(H-T-B)*(1-(Math.log(v)-lo)/(hi-lo));
+  animate(e=>{x.clearRect(0,0,W,H);x.font='11px system-ui';x.textAlign='right';
+    [0.5,1,2,4,8].forEach(t=>{if(Math.log(t)<lo||Math.log(t)>hi)return;const y=py(t);x.strokeStyle='rgba(255,255,255,.07)';x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.fillStyle='#6b7591';x.fillText((t*100)+'.000',L-6,y+4);});
+    yearsAxis(x,px,H,n,2001,5);
+    const m=Math.max(1,Math.floor(n*e));
+    const line=(p,col,wd)=>{x.strokeStyle=col;x.lineWidth=wd;x.lineJoin='round';x.beginPath();for(let i=0;i<=m;i++){i?x.lineTo(px(i),py(p[i])):x.moveTo(px(i),py(p[i]));}x.stroke();};
+    // glød under din linje
+    const g=x.createLinearGradient(0,T,0,H-B);g.addColorStop(0,'rgba(139,92,255,.28)');g.addColorStop(1,'rgba(139,92,255,0)');
+    x.fillStyle=g;x.beginPath();x.moveTo(px(0),H-B);for(let i=0;i<=m;i++)x.lineTo(px(i),py(h.you.path[i]));x.lineTo(px(m),H-B);x.closePath();x.fill();
+    line(h.bench.path,'rgba(203,213,225,.75)',1.6);line(h.you.path,gradYou(x,W),2.6);
+    const yv=h.you.path[m];x.fillStyle='#fff';x.beginPath();x.arc(px(m),py(yv),4,0,7);x.fill();
+  });
+  const c=setup($('cDD'));const lo2=Math.min(h.you.mdd,h.bench.mdd)*1.1;const py2=d=>4+(c.H-8)*(d/lo2);
+  animate(e=>{const X=c.x;X.clearRect(0,0,c.W,c.H);const m=Math.max(1,Math.floor(n*e));
+    X.fillStyle='rgba(255,93,115,.35)';X.beginPath();X.moveTo(px(0),py2(0));for(let i=0;i<=m;i++)X.lineTo(px(i),py2(h.you.dd[i]));X.lineTo(px(m),py2(0));X.closePath();X.fill();
+    X.strokeStyle='#ff5d73';X.lineWidth=1.6;X.beginPath();for(let i=0;i<=m;i++){i?X.lineTo(px(i),py2(h.you.dd[i])):X.moveTo(px(i),py2(0));}X.stroke();
+    X.strokeStyle='rgba(203,213,225,.6)';X.lineWidth=1.2;X.setLineDash([3,3]);X.beginPath();for(let i=0;i<=m;i++){i?X.lineTo(px(i),py2(h.bench.dd[i])):X.moveTo(px(i),py2(0));}X.stroke();X.setLineDash([]);
+    X.fillStyle='#6b7591';X.font='11px system-ui';X.textAlign='right';X.fillText('0 %',L-6,10);X.fillText(pct(lo2/1.1,0),L-6,c.H-4);});
+}
+function drawMC(r){
+  const {x,W,H}=setup($('cMC')),L=50,R=8,T=10,B=20,n=r.n,v0=100000;
+  const lo=Math.log(Math.min(...r.fan.map(f=>f[0]))*.97),hi=Math.log(Math.max(...r.fan.map(f=>f[4]))*1.03);
+  const px=i=>L+(W-L-R)*i/n,py=v=>T+(H-T-B)*(1-(Math.log(v)-lo)/(hi-lo));
+  animate(e=>{x.clearRect(0,0,W,H);x.font='11px system-ui';x.textAlign='right';
+    [0.25,0.5,1,2,4,8,16].forEach(t=>{if(Math.log(t)<lo||Math.log(t)>hi)return;const y=py(t);x.strokeStyle=t===1?'rgba(255,255,255,.25)':'rgba(255,255,255,.07)';x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.fillStyle='#6b7591';x.fillText(Math.round(t*v0/1000)+'.000',L-6,y+4);});
+    yearsAxis(x,px,H,n,null,n>=120?5:n>=60?1:1);
+    const m=Math.max(1,Math.floor(n*e));
+    const band=(a,b,col)=>{x.fillStyle=col;x.beginPath();for(let i=0;i<=m;i++)x.lineTo(px(i),py(r.fan[i][a]));for(let i=m;i>=0;i--)x.lineTo(px(i),py(r.fan[i][b]));x.closePath();x.fill();};
+    band(0,4,'rgba(139,92,255,.22)');band(1,3,'rgba(139,92,255,.42)');
+    x.strokeStyle='rgba(203,213,225,.85)';x.lineWidth=1.5;x.setLineDash([5,4]);x.beginPath();for(let i=0;i<=m;i++){i?x.lineTo(px(i),py(r.fan[i][5])):x.moveTo(px(i),py(r.fan[i][5]));}x.stroke();x.setLineDash([]);
+    x.strokeStyle='#fff';x.lineWidth=2.4;x.beginPath();for(let i=0;i<=m;i++){i?x.lineTo(px(i),py(r.fan[i][2])):x.moveTo(px(i),py(r.fan[i][2]));}x.stroke();
+  });
+}
+
+/* ---------- tiles ---------- */
+function tile(lbl,v,vs,cls='',wide=false){return `<div class="tile${wide?' wide':''}"><div class="lbl">${lbl}</div><div class="v ${cls}">${v}</div><div class="vs">${vs}</div></div>`;}
+function renderHist(){
+  const h=history(),y=h.you,b=h.bench,tilt=S.w>0&&activeWeights().some(x=>x);
+  drawHist(h);
+  $('tHist').innerHTML=
+    tile('Slutværdi',kkr(y.end*1e5),`${spct(y.cagr)} om året · benchmark ${kkr(b.end*1e5)}`,'',true)+
+    tile('Udsving',pct(y.vol,0),`standardafvigelse pr. år · benchmark ${pct(b.vol,0)}`)+
+    tile('Max fald',pct(y.mdd,0),`største fald · benchmark ${pct(b.mdd,0)}`,'dn')+
+    tile('Afkast pr. udsving',y.ratio.toFixed(2).replace('.',','),`risikojusteret · benchmark ${b.ratio.toFixed(2).replace('.',',')}`)+
+    tile(tilt?'Mod benchmark':'Aktier i porteføljen',tilt?pp(y.cagr-b.cagr):Math.round(S.w*100)+'\u00a0%',tilt?'pr. år':'resten er obligationer',tilt?(y.cagr>b.cagr?'up':'dn'):'');
+  let msg;
+  if(!tilt)msg=`Med ${Math.round(S.w*100)} % aktier blev 100.000 kr. til <b>${kkr(y.end*1e5)}</b>. Prisen var et fald på <b>${pct(y.mdd,0)}</b> undervejs. Kunne du have holdt fast?`;
+  else msg=y.cagr>b.cagr?`Dine sektorvalg slog benchmark med <b>${pp(y.cagr-b.cagr)}</b> om året. Men husk: du valgte dem i ${ay}, med facit i hånden. Ville du have valgt dem i 2001? Skift til <b>Sådan kan det gå</b>.`
+    :`Dine sektorvalg tabte <b>${pp(b.cagr-y.cagr).replace('+','')}</b> om året til benchmark, selv om du kunne vælge med facit i hånden. Det er svært at vælge vindere.`;
+  $('mHist').innerHTML=msg;
+}
+function renderMC(){
+  const r=monteCarlo();drawMC(r);const v0=1e5;
+  $('mcHead').textContent=`1.000 mulige fremtider for 100.000 kr. over ${S.H} år`;
+  $('hindRow').classList.toggle('hidden',!r.tilt);
+  $('tMC').innerHTML=
+    tile('Midterste udfald',kkr(r.med*v0),`halvdelen ender over · benchmark ${kkr(r.bmed*v0)}`,'',true)+
+    tile('Dårligste 5 %',kkr(r.p5*v0),'1 ud af 20 ender under','dn')+
+    tile('Bedste 5 %',kkr(r.p95*v0),'1 ud af 20 ender over','up')+
+    tile('Typisk max fald',pct(r.mddMed,0),`værste 5 %: ${pct(r.mddP5,0)}`,'dn')+
+    tile(r.tilt?'Slår benchmark':'Taber penge',r.tilt?Math.round(r.beat*100)+'\u00a0%':Math.round(r.loss*100)+'\u00a0%',r.tilt?'af fremtiderne':`af fremtiderne efter ${S.H} år, før inflation`,r.tilt?'':'dn');
+  let msg;
+  if(r.tilt){
+    const other=monteCarlo(!S.hind),plain=S.hind?other:r,hind=S.hind?r:other,h=history();
+    const risk=h.you.vol>h.bench.vol*1.01?'med større udsving':h.you.vol<h.bench.vol*0.99?'med lidt mindre udsving':'med samme udsving';
+    const nb=Math.round(plain.beat*100),hb=Math.round(hind.beat*100);
+    msg=!S.hind
+      ?`Ingen ved, hvilke sektorer der vinder fremover. Her har dine sektorvalg derfor samme forventede afkast som markedet. Så slår du benchmark i <b>${nb} af 100</b> fremtider, ${risk} og lidt højere omkostninger. Med <b>Bagklogskab</b> ville det være ${hb} af 100, ${hb>nb?`fordi dine sektorer klarede sig godt i 2001–${ay}`:`fordi dine sektorer faktisk klarede sig dårligere end markedet i 2001–${ay}`}.`
+      :`Med bagklogskab slår du benchmark i <b>${hb} af 100</b> fremtider. Det forudsætter, at fremtiden gentager 2001–${ay}. Det ved ingen. Uden bagklogskab er det ${nb} af 100.`;
+  }
+  else msg=`Over ${S.H} år taber du penge i <b>${Math.round(r.loss*100)} af 100</b> fremtider, før inflation. Jo længere tid, jo sjældnere taber du, men faldene undervejs forsvinder ikke. Prøv 1 år og 20 år.`;
+  $('mMC').innerHTML=msg;
+}
+function render(){if(!S.ran)return;$('vHist').classList.toggle('hidden',S.view!=='hist');$('vMC').classList.toggle('hidden',S.view!=='mc');S.view==='hist'?renderHist():renderMC();}
+let rt=null;function rerun(){if(!S.ran)return;clearTimeout(rt);rt=setTimeout(render,150);}
+$('run').onclick=()=>{S.ran=true;SEED=Math.floor(Math.random()*1e9);$('res').classList.add('on');$('run').textContent='Kør igen ↻';render();
+  setTimeout(()=>$('res').scrollIntoView({behavior:'smooth',block:'start'}),50);};
+document.querySelectorAll('#view button').forEach(b=>b.onclick=()=>{S.view=b.dataset.v;document.querySelectorAll('#view button').forEach(x=>x.setAttribute('aria-pressed',x===b));render();});
+document.querySelectorAll('#hor button').forEach(b=>b.onclick=()=>{S.H=+b.dataset.y;document.querySelectorAll('#hor button').forEach(x=>x.setAttribute('aria-pressed',x===b));render();});
+$('hind').onchange=e=>{S.hind=e.target.checked;render();};
+let lastW=document.documentElement.clientWidth;addEventListener('resize',()=>{const w=document.documentElement.clientWidth;if(w===lastW)return;lastW=w;clearTimeout(rt);rt=setTimeout(render,200);});
+$('foot').textContent=`Data: MSCI ACWI og dets sektorindeks (Net Total Return i DKK) og Bloomberg Global Aggregate, valutaafdækket. Månedlig, jan 2001 – ${MON[+am-1]} ${ay}. Kilde: Bloomberg. Ejendomme (ca. ${pct(DATA.w_other,0)}) ligger altid på markedsvægt. Uden bagklogskab får dine sektorvalg samme forventede afkast som markedet. Sektorvægte er markedets vægte i dag. Omkostninger: aktieindeksfond 0,07 %, obligationsfond 0,10 % og 0,25 % ekstra på den overvægtede del. Sektorernes historik følger MSCI's indeks; fx var Kommunikation før 2018 mest teleselskaber, mens Google og Meta lå i IT. Fremtiden er simuleret ved at trække tilfældige 12-månedersperioder fra historien, så krak og sammenhænge mellem aktivklasser er med. Før skat. Historiske afkast er ingen garanti for fremtidige.`;
+updMix();updSec();
+</script>
+</body>
+</html>
