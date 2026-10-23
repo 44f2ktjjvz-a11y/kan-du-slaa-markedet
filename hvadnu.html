@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b17">
+<title>Hvad gør du nu?</title>
+<meta name="description" content="10 år på aktiemarkedet med rigtige afkast, men du ved ikke hvilke år. Hvad gør du, når markedet bevæger sig?">
+<style>
+:root{--bg:#070b17;--card:rgba(255,255,255,.06);--card2:rgba(255,255,255,.1);--line:rgba(255,255,255,.12);--ink:#f4f6fb;--muted:#9aa4bc;
+  --a1:#8b5cff;--a2:#22d3ee;--gold:#fbbf24;--bad:#ff5d73;--good:#34d399}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:radial-gradient(900px 600px at 100% -10%,rgba(139,92,255,.22),transparent 60%),radial-gradient(700px 500px at -20% 40%,rgba(34,211,238,.12),transparent 60%),var(--bg);background-attachment:fixed}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 40px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.top a{font-size:.85rem;color:var(--muted);text-decoration:none}
+h1{font-size:2rem;line-height:1.08;margin:10px 0 6px;letter-spacing:-.02em}
+.grad{background:linear-gradient(90deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0}
+.mix{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.mix button{border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:16px;padding:14px 8px;font:inherit;cursor:pointer;text-align:center}
+.mix b{display:block;font-size:1.25rem}.mix span{font-size:.78rem;color:var(--muted)}
+.mix button:active{transform:scale(.98)}
+.btn{display:block;width:100%;border:0;border-radius:16px;padding:15px;font:inherit;font-weight:800;font-size:1.05rem;color:#fff;cursor:pointer;
+  background:linear-gradient(90deg,var(--a1),var(--a2));box-shadow:0 10px 30px rgba(139,92,255,.3);margin-top:10px}
+.btn.ghost{background:var(--card2);box-shadow:none;border:1px solid var(--line)}
+#dBtns .btn{margin-top:0;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22)}
+#dBtns .btn:active{background:rgba(255,255,255,.22)}
+.btn.bad{background:linear-gradient(90deg,#e11d48,#ff5d73);box-shadow:0 10px 30px rgba(255,93,115,.3)}
+.btn.good{background:linear-gradient(90deg,#059669,#34d399);box-shadow:0 10px 30px rgba(52,211,153,.25)}
+.hidden{display:none!important}
+/* hud */
+.hud,.cmp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.st{background:var(--card2);border-radius:16px;padding:10px 13px}
+.st .l{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.st .v{font-size:clamp(1.1rem,6vw,1.45rem);font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dn{color:var(--bad)}.up{color:var(--good)}
+canvas{display:block;width:100%}
+.where{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:6px}
+.track{height:6px;border-radius:3px;background:var(--card2);overflow:hidden;margin-top:6px}
+.track i{display:block;height:100%;background:linear-gradient(90deg,var(--a1),var(--a2));transition:width .3s}
+.pos{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--card2)}
+.pos i{width:8px;height:8px;border-radius:50%}
+/* decision sheet */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:10;transform:translateY(110%);visibility:hidden;transition:transform .45s cubic-bezier(.2,.8,.2,1),visibility 0s .45s}
+.sheet.on{transform:none;visibility:visible;transition-delay:0s}
+.sheet .in{max-width:640px;margin:0 auto;background:#121a31;border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;padding:16px 16px 0;box-shadow:0 -20px 60px rgba(0,0,0,.5);max-height:86vh;max-height:86dvh;overflow-y:auto}
+#dBtns{position:sticky;bottom:0;background:#121a31;padding:10px 0 calc(14px + env(safe-area-inset-bottom));margin-top:4px}
+.tag{display:inline-block;font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
+.tag.crash{background:rgba(255,93,115,.18);color:#ff8f9f}.tag.rally{background:rgba(52,211,153,.16);color:#6ee7b7}.tag.calm{background:rgba(255,255,255,.1);color:#cbd5e1}.tag.v{background:rgba(251,191,36,.16);color:#fcd34d}
+.news{font-size:1.25rem;font-weight:800;line-height:1.2;margin:8px 0 2px}
+.since{font-size:.92rem;color:var(--muted);margin-bottom:6px}
+.bign{font-size:2.2rem;font-weight:900;line-height:1;margin:6px 0 2px;letter-spacing:-.02em}
+.bign span{display:block;font-size:.8rem;color:var(--muted);font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.kline{font-size:1.05rem;color:var(--ink);margin:10px 0 6px}
+.newsub{font-size:.88rem;margin-bottom:10px}
+.tbl{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px 10px;align-items:baseline;background:rgba(255,255,255,.05);border-radius:14px;padding:10px 12px;margin-bottom:12px;font-variant-numeric:tabular-nums}
+.tbl>span{font-size:.75rem;color:var(--muted);font-weight:700}
+.tbl>b{font-size:1rem;text-align:right}
+.tbl>span:nth-child(2),.tbl>span:nth-child(3){text-align:right;text-transform:uppercase;letter-spacing:.06em;font-size:.68rem}
+.tbl small{display:block;font-size:.75rem;opacity:.85;font-weight:700}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.shake{animation:shake .45s ease}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.flash{position:fixed;inset:0;pointer-events:none;z-index:9;opacity:0;transition:opacity .25s}
+/* reveal */
+.reveal h2{font-size:1.6rem;margin:0 0 4px}
+.period{font-size:2.6rem;font-weight:900;letter-spacing:-.03em;line-height:1}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums;margin-top:6px}
+th,td{padding:7px 4px;border-bottom:1px solid var(--line);text-align:right}
+th{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+td:first-child,th:first-child{text-align:left}
+.log{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.log div{display:flex;justify-content:space-between;gap:10px;font-size:.88rem;background:var(--card2);border-radius:12px;padding:8px 11px}
+.log b{font-variant-numeric:tabular-nums}
+.foot{font-size:.75rem;color:var(--muted);margin-top:16px;line-height:1.5}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:5px;border-radius:3px;margin-right:6px;vertical-align:middle}
+@media(prefers-reduced-motion:reduce){.sheet{transition:none}.shake{animation:none}.flash{display:none}}
+</style>
+</head>
+<body>
+<div class="flash" id="flash"></div>
+<div class="wrap">
+  <div class="top"><a href="./">← Alle opgaver</a><span style="font-size:.8rem;color:var(--muted)">Undervisning, ikke rådgivning</span></div>
+  <h1>Hvad gør du <span class="grad">nu?</span></h1>
+  <p class="lead" id="lead">Du sætter <b style="color:#fff">100.000 kr.</b> i en global portefølje i 10 år. Afkastene er rigtige, men du får ikke at vide, hvornår de 10 år er. Undervejs sker der ting. Du bestemmer selv, hvad du gør.</p>
+
+  <!-- start -->
+  <section class="card" id="start">
+    <b>Vælg din fordeling</b>
+    <div class="mix" id="mix">
+      <button data-w="1"><b>100 %</b><span>aktier</span></button>
+      <button data-w="0.6"><b>60/40</b><span>aktier/obl.</span></button>
+      <button data-w="0.3"><b>30/70</b><span>aktier/obl.</span></button>
+    </div>
+    <p style="font-size:.85rem;color:var(--muted);margin:12px 0 0">Alle i lokalet får den samme hemmelige periode i dag.</p>
+  </section>
+
+  <!-- play -->
+  <section id="play" class="hidden">
+    <div class="card">
+      <div class="hud">
+        <div class="st"><div class="l">Din portefølje</div><div class="v" id="hVal">100.000 kr.</div></div>
+        <div class="st"><div class="l" id="hChgL">Siden start</div><div class="v" id="hChg">0 %</div></div>
+      </div>
+      <canvas id="cv" height="230" role="img" aria-label="Din porteføljes værdi over tid"></canvas>
+      <div class="where"><span id="when">År 1</span><span class="pos" id="pos"><i></i></span></div>
+      <div class="track"><i id="prog" style="width:0"></i></div>
+    </div>
+    <button class="btn" id="goBtn">Start ▶</button>
+  </section>
+
+  <!-- reveal -->
+  <section id="reveal" class="hidden">
+    <div class="card reveal">
+      <div style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:800">Din hemmelige periode var</div>
+      <div class="period grad" id="rPeriod" tabindex="-1" style="font-size:2rem;outline:none"></div>
+      <canvas id="cv2" height="250" role="img" aria-label="Din portefølje mod at have gjort ingenting, med kriserne markeret"></canvas>
+      <div class="legend"><span><i style="background:linear-gradient(90deg,var(--a1),var(--a2))"></i>Dig</span><span><i style="background:#cbd5e1"></i>Hvis du ikke havde gjort noget</span><span><i style="background:rgba(255,93,115,.6)"></i>Kriser</span></div>
+      <div class="cmp">
+        <div class="st"><div class="l">Dig</div><div class="v" id="rYou"></div></div>
+        <div class="st"><div class="l">Gjort ingenting</div><div class="v" id="rHold"></div></div>
+      </div>
+      <p id="rMsg" aria-live="polite" style="font-weight:700;margin:14px 0 4px"></p>
+    </div>
+    <div class="card">
+      <b>Dine valg</b>
+      <div class="log" id="rLog"></div>
+    </div>
+    <div class="card">
+      <b>Samme periode, alle fordelinger</b>
+      <table id="rTab"></table>
+      <p style="font-size:.8rem;color:var(--muted);margin:8px 0 0">Max fald = største fald fra top til bund undervejs.</p>
+    </div>
+    <button class="btn" id="againBtn">Prøv en anden periode ↻</button>
+    <button class="btn ghost" id="sameBtn">Samme periode, ny fordeling</button>
+    <p class="foot" id="foot"></p>
+  </section>
+</div>
+
+<!-- decision sheet -->
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="dNews"><div class="in">
+  <span class="tag" id="dTag"></span>
+  <div class="news" id="dNews"></div>
+  <div class="since" id="dSince"></div>
+  <div class="btns" id="dBtns"></div>
+</div></div>
+
+<script>
+const DATA={"monthly":[["2000-01",-0.017369,-0.004169],["2000-02",0.00866,0.007444],["2000-03",0.076203,0.011388],["2000-04",0.005098,-0.001365],["2000-05",-0.050224,0.000762],["2000-06",0.011715,0.010221],["2000-07",-0.001558,0.006092],["2000-08",0.07958,0.005649],["2000-09",-0.051684,0.006638],["2000-10",0.017047,0.006104],["2000-11",-0.085004,0.015145],["2000-12",-0.056341,0.012285],["2001-01",0.034485,0.012423],["2001-02",-0.076283,0.008167],["2001-03",-0.022226,0.006327],["2001-04",0.065195,-0.005097],["2001-05",0.034107,0.006432],["2001-06",-0.034277,0.005429],["2001-07",-0.045158,0.014996],["2001-08",-0.084604,0.009733],["2001-09",-0.093093,0.008675],["2001-10",0.031459,0.019314],["2001-11",0.068267,-0.00745],["2001-12",0.013977,-0.005657],["2002-01",0.006921,0.006035],["2002-02",-0.015997,0.006586],["2002-03",0.04031,-0.009192],["2002-04",-0.064752,0.014383],["2002-05",-0.030485,0.005904],["2002-06",-0.117976,0.011311],["2002-07",-0.074431,0.011821],["2002-08",0.000281,0.015612],["2002-09",-0.116118,0.01461],["2002-10",0.072066,-0.001299],["2002-11",0.048709,0.002533],["2002-12",-0.098584,0.017555],["2003-01",-0.049295,0.005822],["2003-02",-0.023774,0.011232],["2003-03",-0.015204,0.000244],["2003-04",0.062803,0.006418],["2003-05",0.003486,0.01752],["2003-06",0.044318,-0.002448],["2003-07",0.044866,-0.020215],["2003-08",0.047101,0.000326],["2003-09",-0.053628,0.017602],["2003-10",0.068054,-0.008599],["2003-11",-0.01761,0.002284],["2003-12",0.016558,0.010046],["2004-01",0.024487,0.00673],["2004-02",0.016806,0.010903],["2004-03",0.008339,0.005883],["2004-04",0.001895,-0.01496],["2004-05",-0.010304,-0.001825],["2004-06",0.020754,0.002595],["2004-07",-0.018277,0.007527],["2004-08",-0.008476,0.016328],["2004-09",0.001214,0.004576],["2004-10",-0.003412,0.007494],["2004-11",0.013012,0.0022],["2004-12",0.018468,0.006872],["2005-01",0.01756,0.007559],["2005-02",0.018686,-0.004452],["2005-03",0.000463,0.001021],["2005-04",-0.01789,0.011831],["2005-05",0.065022,0.009225],["2005-06",0.031889,0.007768],["2005-07",0.035167,-0.00648],["2005-08",-0.00936,0.008706],["2005-09",0.05676,-0.006245],["2005-10",-0.023485,-0.0078],["2005-11",0.052443,0.003141],["2005-12",0.021823,0.006864],["2006-01",0.020324,-0.002316],["2006-02",0.019065,0.001023],["2006-03",0.002992,-0.010244],["2006-04",-0.00709,-0.005028],["2006-05",-0.054674,0.001253],["2006-06",0.003162,-0.002043],["2006-07",0.008689,0.009762],["2006-08",0.023165,0.012972],["2006-09",0.020052,0.005369],["2006-10",0.030185,0.003658],["2006-11",-0.009168,0.006885],["2006-12",0.027676,-0.006322],["2007-01",0.023901,-0.00201],["2007-02",-0.022117,0.011103],["2007-03",0.008886,-0.001683],["2007-04",0.021713,0.001933],["2007-05",0.046316,-0.008196],["2007-06",-0.010606,-0.004803],["2007-07",-0.026593,0.008991],["2007-08",0.002519,0.010348],["2007-09",0.010183,0.003106],["2007-10",0.022228,0.007554],["2007-11",-0.059128,0.010625],["2007-12",-0.003173,0.001483],["2008-01",-0.098535,0.015778],["2008-02",-0.019288,0.003684],["2008-03",-0.053307,0.000448],["2008-04",0.07273,-0.004549],["2008-05",0.017093,-0.007974],["2008-06",-0.093586,-0.001691],["2008-07",-0.016434,0.00907],["2008-08",0.041436,0.011982],["2008-09",-0.08873,-0.008066],["2008-10",-0.115382,-0.011232],["2008-11",-0.063939,0.028456],["2008-12",-0.057142,0.023836],["2009-01",-0.003595,-0.008126],["2009-02",-0.090844,0.000302],["2009-03",0.040302,0.008705],["2009-04",0.119868,0.004251],["2009-05",0.028568,0.001811],["2009-06",-0.000831,0.009466],["2009-07",0.072877,0.013183],["2009-08",0.02849,0.010112],["2009-09",0.024472,0.008305],["2009-10",-0.021879,0.002131],["2009-11",0.024407,0.010014],["2009-12",0.066408,-0.009616],["2010-01",-0.012064,0.01053],["2010-02",0.033685,0.004833],["2010-03",0.070008,0.001977],["2010-04",0.02121,0.005606],["2010-05",-0.02334,0.008104],["2010-06",-0.026608,0.008831],["2010-07",0.016256,0.007616],["2010-08",-0.008682,0.01698],["2010-09",0.021785,-0.001936],["2010-10",0.014816,-0.000622],["2010-11",0.042947,-0.011223],["2010-12",0.04707,-0.004384],["2011-01",-0.008786,-0.002941],["2011-02",0.022261,0.002202],["2011-03",-0.028982,-0.00027],["2011-04",-0.003523,0.009308],["2011-05",0.009362,0.010806],["2011-06",-0.025091,-0.001193],["2011-07",-0.008432,0.012199],["2011-08",-0.074929,0.012855],["2011-09",-0.03076,0.006682],["2011-10",0.067551,-0.000649],["2011-11",0.005349,-0.005378],["2011-12",0.035162,0.015363],["2012-01",0.049214,0.009676],["2012-02",0.027968,0.003375],["2012-03",0.009263,-0.001627],["2012-04",-0.003869,0.006051],["2012-05",-0.027043,0.010845],["2012-06",0.026065,-0.002062],["2012-07",0.043115,0.013099],["2012-08",0.001691,0.001535],["2012-09",0.0074,0.003259],["2012-10",-0.013275,0.00222],["2012-11",0.010377,0.004496],["2012-12",0.007573,0.000277],["2013-01",0.016313,-0.005754],["2013-02",0.037543,0.005952],["2013-03",0.039026,0.004844],["2013-04",0.002092,0.010296],["2013-05",0.011623,-0.014837],["2013-06",-0.031291,-0.014199],["2013-07",0.025967,0.003595],["2013-08",-0.014856,-0.004228],["2013-09",0.026078,0.007667],["2013-10",0.034924,0.008646],["2013-11",0.015366,-0.001602],["2013-12",0.002285,-0.00574],["2014-01",-0.019614,0.014418],["2014-02",0.025484,0.004556],["2014-03",0.007456,0.000719],["2014-04",0.002478,0.00667],["2014-05",0.037946,0.009636],["2014-06",0.014155,0.00316],["2014-07",0.010456,0.001999],["2014-08",0.039834,0.012146],["2014-09",0.006412,-0.003307],["2014-10",0.014765,0.007178],["2014-11",0.02426,0.009264],["2014-12",0.008479,0.005098],["2015-01",0.054534,0.019589],["2015-02",0.067683,-0.006838],["2015-03",0.028345,0.004666],["2015-04",-0.016302,-0.006387],["2015-05",0.019803,-0.005461],["2015-06",-0.039172,-0.012994],["2015-07",0.022739,0.00911],["2015-08",-0.085113,-0.003322],["2015-09",-0.034623,0.005282],["2015-10",0.094063,0.002568],["2015-11",0.035111,-0.000277],["2015-12",-0.045386,-0.004104],["2016-01",-0.058381,0.013823],["2016-02",-0.010231,0.008801],["2016-03",0.025221,0.006802],["2016-04",0.00836,0.000858],["2016-05",0.027735,0.003419],["2016-06",-8.9e-05,0.017879],["2016-07",0.035364,0.004821],["2016-08",0.003604,-0.001718],["2016-09",0.000456,-0.001459],["2016-10",0.005721,-0.011454],["2016-11",0.042453,-0.018375],["2016-12",0.025939,0.000843],["2017-01",0.00493,-0.005337],["2017-02",0.044793,0.007583],["2017-03",0.004203,-0.002035],["2017-04",-0.003274,0.005229],["2017-05",-0.008415,0.004153],["2017-06",-0.011341,-0.004506],["2017-07",-0.006497,0.001452],["2017-08",-0.001956,0.007184],["2017-09",0.026516,-0.006377],["2017-10",0.03443,0.002474],["2017-11",-0.001431,-0.000235],["2017-12",0.005309,-0.000175],["2018-01",0.022688,-0.008811],["2018-02",-0.025266,-0.004234],["2018-03",-0.029686,0.005684],["2018-04",0.027929,-0.005972],["2018-05",0.037004,0.001357],["2018-06",-0.004979,-0.000641],["2018-07",0.02788,-0.002098],["2018-08",0.017846,0.000555],["2018-09",0.003056,-0.006219],["2018-10",-0.049252,-0.004678],["2018-11",0.014041,0.002349],["2018-12",-0.081131,0.010923],["2019-01",0.079109,0.007715],["2019-02",0.032195,-0.001351],["2019-03",0.027652,0.015337],["2019-04",0.034309,-0.002131],["2019-05",-0.054472,0.011507],["2019-06",0.046385,0.010938],["2019-07",0.024299,0.005276],["2019-08",-0.012782,0.020177],["2019-09",0.030371,-0.007192],["2019-10",0.00554,-0.004302],["2019-11",0.036654,-0.003315],["2019-12",0.015663,-0.004803],["2020-01",0.002092,0.016178],["2020-02",-0.07394,0.010365],["2020-03",-0.133692,-0.017625],["2020-04",0.110152,0.015055],["2020-05",0.027338,0.002219],["2020-06",0.018431,0.004354],["2020-07",0.003389,0.009729],["2020-08",0.046791,-0.007768],["2020-09",-0.013528,0.003175],["2020-10",-0.017949,-0.000434],["2020-11",0.094007,0.0049],["2020-12",0.023051,0.001903],["2021-01",0.002533,-0.006071],["2021-02",0.027403,-0.016079],["2021-03",0.05578,-0.004621],["2021-04",0.019551,0.002063],["2021-05",-0.001141,0.001723],["2021-06",0.045529,0.004554],["2021-07",0.006345,0.011872],["2021-08",0.029262,-0.00254],["2021-09",-0.021751,-0.010134],["2021-10",0.054298,-0.00317],["2021-11",-0.004764,0.006712],["2021-12",0.033166,-0.005332],["2022-01",-0.034393,-0.01665],["2022-02",-0.025093,-0.013857],["2022-03",0.033142,-0.023093],["2022-04",-0.033592,-0.029294],["2022-05",-0.015627,-0.002635],["2022-06",-0.062845,-0.017221],["2022-07",0.100985,0.023961],["2022-08",-0.024072,-0.028692],["2022-09",-0.071675,-0.035039],["2022-10",0.051342,-0.005539],["2022-11",0.03173,0.022349],["2022-12",-0.075004,-0.014143],["2023-01",0.056889,0.02024],["2023-02",-0.004358,-0.018449],["2023-03",0.006567,0.01954],["2023-04",0.000281,0.003163],["2023-05",0.02479,-0.006311],["2023-06",0.030764,-0.002623],["2023-07",0.029145,-0.0013],["2023-08",-0.012797,-0.003358],["2023-09",-0.017036,-0.019443],["2023-10",-0.02898,-0.008691],["2023-11",0.059612,0.031837],["2023-12",0.031228,0.029928],["2024-01",0.025704,-0.003569],["2024-02",0.047695,-0.008508],["2024-03",0.033235,0.007523],["2024-04",-0.023216,-0.017756],["2024-05",0.024566,0.007126],["2024-06",0.034582,0.007173],["2024-07",0.008009,0.017404],["2024-08",0.00273,0.008982],["2024-09",0.013455,0.009871],["2024-10",0.00406,-0.015768],["2024-11",0.066044,0.010628],["2024-12",-0.003086,-0.009639],["2025-01",0.027169,0.002241],["2025-02",-0.004401,0.010485],["2025-03",-0.07602,-0.005557],["2025-04",-0.038519,0.007718],["2025-05",0.057302,-0.005428],["2025-06",0.008382,0.007318],["2025-07",0.04426,-0.003381],["2025-08",0.000323,0.00324],["2025-09",0.031352,0.005118],["2025-10",0.043396,0.005636],["2025-11",-0.006746,0.000225],["2025-12",-0.00096,-0.004292],["2026-01",0.017688,0.000712],["2026-02",0.018073,0.012502],["2026-03",-0.049635,-0.020272],["2026-04",0.084683,0.001456],["2026-05",0.056513,0.004557],["2026-06",0.014488,0.002102],["2026-07",-0.008175,-0.011797],["2026-08",0.017937,-0.000441],["2026-09",0.013172,-0.018322]],"source":{"equity":"MSCI ACWI Net Total Return (NDUEACWF Index), i DKK via Bloomberg","bonds":"Bloomberg Global Aggregate TR afdaekket: EUR-afdaekket (LEGATREH) 2000-2011, DKK-afdaekket (H00038DK) fra 2012","asof":"2026-09"}};
+const M=DATA.monthly; // [YYYY-MM, aktier, obligationer]
+const $=id=>document.getElementById(id);
+const pct=(x,d=0)=>{const t=(Math.abs(x)*100).toFixed(d);return (+t===0?'':x<0?'−':'+')+t.replace('.',',')+' %';};
+const kr=x=>Math.round(x).toLocaleString('da-DK')+' kr.';
+const LEN=120;
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const STARTS=[];for(let i=0;i+LEN<=M.length;i++)STARTS.push(i); // alle startmåneder, så måned og år ikke afslører perioden
+const MON=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+const mlab=i=>{const [y,m]=M[i][0].split('-');return MON[+m-1]+' '+y;};
+const CRISES=[['2000-03','IT-boblen brister'],['2001-09','11. september'],['2008-09','Finanskrisen'],['2011-08','Gældskrisen i Europa'],['2015-08','Kina-uro'],['2018-12','Renter og handelskrig'],['2020-03','Corona'],['2022-06','Inflation og renter'],['2025-04','Toldchok']];
+
+/* ---------- periode: samme for alle i dag ---------- */
+function dayIndex(){const d=new Date(),s=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0)%STARTS.length;}
+const pin=new URLSearchParams(location.search).get('p');const pinI=pin?M.findIndex(r=>r[0]===pin):-1;
+let P={start:pinI>=0&&pinI+LEN<=M.length?pinI:STARTS[dayIndex()],w:1};
+
+/* ---------- beslutningspunkter: når markedet gør noget ---------- */
+function stopsFor(start){ // ud fra aktiemarkedet, så alle med samme periode får de samme stop
+  const out=[];let v=1,trough=1,troughAt=-1,lvl=0,lastStop=0,lastRally=-99;const eq=[1];
+  for(let k=0;k<LEN;k++){v*=1+M[start+k][1];eq.push(v);const m=k+1;
+    const pk=Math.max(...eq.slice(Math.max(0,m-24),m+1)),dd=v/pk-1;if(dd>-0.05)lvl=0;
+    if(v<trough||troughAt<0){trough=v;troughAt=m;}
+    if(m-lastStop<3||m>=LEN)continue;
+    const levels=[-0.15,-0.30,-0.45];
+    if(lvl<levels.length&&dd<=levels[lvl]){while(lvl<levels.length&&dd<=levels[lvl])lvl++;out.push({m,type:'crash',dd,lvl});lastStop=m;trough=v;troughAt=m;continue;}
+    const prevCrash=out.length&&out[out.length-1].type==='crash';
+    if(prevCrash&&m-troughAt<=5&&v/trough-1>=0.18){out.push({m,type:'v',up:v/trough-1});lastStop=m;trough=v;troughAt=m;continue;}
+    if(m>=12&&m-lastRally>=18&&eq[m]/eq[m-12]-1>=0.25){out.push({m,type:'rally',up:eq[m]/eq[m-12]-1});lastStop=m;lastRally=m;continue;}
+    if(m-lastStop>=36&&dd>-0.10){out.push({m,type:'calm'});lastStop=m;}
+  }
+  return out;
+}
+
+/* ---------- spil ---------- */
+let S=null;
+function newGame(w){S={w,inEq:true,v:[1],h:[1],k:0,stops:stopsFor(P.start),si:0,log:[],lastStopVal:1,lastStopEq:1,eqIdx:1,running:false};
+  $('start').classList.add('hidden');$('reveal').classList.add('hidden');$('play').classList.remove('hidden');
+  $('goBtn').textContent='Start ▶';$('goBtn').disabled=false;updHud();draw();window.scrollTo({top:0,behavior:RM?'auto':'smooth'});}
+document.querySelectorAll('#mix button').forEach(b=>b.onclick=()=>newGame(+b.dataset.w));
+function step(){const r=M[P.start+S.k],e=r[1],b=r[2],w=S.inEq?S.w:0;
+  S.v.push(S.v[S.v.length-1]*(1+w*e+(1-w)*b));S.h.push(S.h[S.h.length-1]*(1+S.w*e+(1-S.w)*b));S.eqIdx*=1+e;S.k++;}
+function run(){if(S.running)return;S.running=true;$('goBtn').disabled=true;
+  const target=S.si<S.stops.length?S.stops[S.si].m:LEN;
+  const tick=()=>{step();updHud();draw();
+    if(S.k>=target){S.running=false;if(S.k>=LEN)return finish();decide(S.stops[S.si]);return;}
+    setTimeout(tick,S.k%12===0?110:55);};
+  tick();}
+$('goBtn').onclick=run;
+function updHud(){const v=S.v[S.v.length-1]*1e5,ch=S.v[S.v.length-1]-1;
+  $('hVal').textContent=kr(v);$('hChg').textContent=pct(ch);$('hChg').className='v '+(ch<-0.005?'dn':ch>0.005?'up':'');
+  $('when').textContent=S.k===0?'Start':S.k>=LEN?'Slut på år 10':`År ${Math.floor((S.k-1)/12)+1}`;
+  $('prog').style.width=(100*S.k/LEN)+'%';
+  $('pos').innerHTML=S.inEq?`<i style="background:var(--a2)"></i>${Math.round(S.w*100)}\u00a0% aktier`:`<i style="background:var(--gold)"></i>Solgt · i obligationer`;}
+
+/* ---------- graf ---------- */
+function setup(cv){const d=devicePixelRatio||1,W=cv.clientWidth;if(!cv.dataset.h)cv.dataset.h=cv.getAttribute('height');const H=+cv.dataset.h;cv.style.height=H+'px';cv.width=W*d;cv.height=H*d;const x=cv.getContext('2d');x.setTransform(d,0,0,d,0,0);return {x,W,H};}
+function draw(reveal=false){
+  const cv=reveal?$('cv2'):$('cv');const {x,W,H}=setup(cv),L=48,R=8,T=12,B=22;
+  const seen=reveal?S.v.concat(S.h):S.v;let lo=Math.min(0.7,...seen),hi=Math.max(1.4,...seen);lo=Math.log(lo*.95);hi=Math.log(hi*1.05);
+  const px=i=>L+(W-L-R)*i/LEN,py=v=>T+(H-T-B)*(1-(Math.log(v)-lo)/(hi-lo));
+  x.font='11px system-ui';x.fillStyle='#7c869e';x.textAlign='right';
+  [0.5,0.75,1,1.5,2,3,4].forEach(t=>{if(Math.log(t)<lo||Math.log(t)>hi)return;const y=py(t);x.strokeStyle=t===1?'rgba(255,255,255,.28)':'rgba(255,255,255,.07)';x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.fillText(Math.round(t*100)+'.000',L-6,y+4);});
+  x.textAlign='center';
+  if(reveal){for(let k=0;k<=LEN;k+=24){const i=Math.min(LEN-1,k);x.fillText(M[P.start+i][0].slice(0,4),Math.min(W-R-16,Math.max(L+16,px(k))),H-5);}}
+  else for(let yv=0;yv<=10;yv+=2)x.fillText(yv?'År '+yv:'Start',Math.min(W-R-14,Math.max(L+14,px(yv*12))),H-5);
+  if(reveal){ // kriser
+    CRISES.forEach(([d,n])=>{const i=M.findIndex(r=>r[0]===d)-P.start;if(i<0||i>=LEN)return;const X=px(i+1);
+      x.fillStyle='rgba(255,93,115,.14)';x.fillRect(X-5,T,10,H-T-B);x.save();x.translate(X+3,T+4);x.rotate(Math.PI/2);x.fillStyle='#ff8f9f';x.textAlign='left';x.font='bold 11px system-ui';x.fillText(n,0,0);x.restore();});
+    x.strokeStyle='rgba(203,213,225,.85)';x.lineWidth=1.8;x.beginPath();S.h.forEach((v,i)=>i?x.lineTo(px(i),py(v)):x.moveTo(px(i),py(v)));x.stroke();}
+  const g=x.createLinearGradient(0,0,W,0);g.addColorStop(0,'#8b5cff');g.addColorStop(1,'#22d3ee');
+  const n=S.v.length-1;
+  if(!reveal){const gr=x.createLinearGradient(0,T,0,H-B);gr.addColorStop(0,'rgba(139,92,255,.28)');gr.addColorStop(1,'rgba(139,92,255,0)');x.fillStyle=gr;x.beginPath();x.moveTo(px(0),H-B);S.v.forEach((v,i)=>x.lineTo(px(i),py(v)));x.lineTo(px(n),H-B);x.closePath();x.fill();}
+  x.strokeStyle=g;x.lineWidth=2.6;x.lineJoin='round';x.beginPath();S.v.forEach((v,i)=>i?x.lineTo(px(i),py(v)):x.moveTo(px(i),py(v)));x.stroke();
+  S.log.forEach(l=>{if(l.act==='Behold'||l.act==='Bliv ude')return;const X=px(l.m),Y=py(S.v[l.m]);x.fillStyle=l.act==='Sælg'?'#ff5d73':'#34d399';x.strokeStyle='#070b17';x.lineWidth=2;x.beginPath();x.arc(X,Y,5.5,0,7);x.fill();x.stroke();});
+  x.fillStyle='#fff';x.beginPath();x.arc(px(n),py(S.v[n]),4,0,7);x.fill();
+}
+
+/* ---------- beslutning ---------- */
+const NEWS={
+  crash:[['Aktier falder kraftigt','Eksperterne er uenige om, hvor bunden er.'],['Panik på markederne','Aviserne skriver »krise«. Dine venner har solgt.'],['Det ser sort ud','Nogen siger, at det her er det værste i mange år.']],
+  v:[['Markedet vender pludselig','Kurserne er steget voldsomt fra bunden på få måneder.']],
+  rally:[['Aktierne buldrer derudad','Alle taler om aktier. Din nabo har lige købt.']],
+  calm:[['Du har ikke kigget i et stykke tid','Du logger ind for at se, hvordan det går.']]};
+function decide(st){const eqSince=S.eqIdx/S.lastStopEq-1,valSince=S.v[S.v.length-1]/S.lastStopVal-1,months=S.k-(S.log.length?S.log[S.log.length-1].m:0);
+  const pool=NEWS[st.type],n=st.type==='crash'?pool[Math.min(pool.length,st.lvl)-1]:pool[0];
+  const tag={crash:['crash','Fald'],v:['v','Comeback'],rally:['rally','Stigning'],calm:['calm','Status']}[st.type];
+  $('dTag').className='tag '+tag[0];$('dTag').textContent=tag[1];
+  $('dNews').textContent=n[0];
+  const per=months===12?'det seneste år':months>=24?`de seneste ${String(Math.round(months/12*10)/10).replace('.',',')} år`:`de seneste ${months} måneder`;
+  const col=x=>x<-0.0005?'#ff8f9f':x>0.0005?'#6ee7b7':'#cbd5e1';
+  const krs=x=>(x<0?'−':'+')+Math.abs(Math.round(x)).toLocaleString('da-DK')+'\u00a0kr.';
+  const vNow=S.v[S.v.length-1],vTop=Math.max(...S.v),eqStart=S.eqIdx-1;
+  const bigN=st.type==='crash'?[st.dd,'Aktiemarkedet fra toppen']:st.type==='rally'?[st.up,'Aktiemarkedet det seneste år']:st.type==='v'?[st.up,'Aktiemarkedet fra bunden']:[eqStart,'Aktiemarkedet siden start'];
+  // én sætning i kroner, så tabet eller gevinsten føles
+  const kline=vNow<1?`Du har tabt <b style="color:#ff8f9f">${Math.round((1-vNow)*1e5).toLocaleString('da-DK')}\u00a0kr.</b> af dine 100.000\u00a0kr.`
+    :vNow<vTop-0.005?`Du er <b style="color:#ff8f9f">${Math.round((vTop-vNow)*1e5).toLocaleString('da-DK')}\u00a0kr.</b> under din højeste værdi, men stadig over de 100.000\u00a0kr., du startede med.`
+    :`Du har tjent <b style="color:#6ee7b7">${Math.round((vNow-1)*1e5).toLocaleString('da-DK')}\u00a0kr.</b> på dine 100.000\u00a0kr.`;
+  const first=!S.log.length;
+  const rows=`<div class="tbl"><span></span><span>Aktiemarkedet</span><span>Din portefølje</span>
+    <span>Siden start</span><b style="color:${col(eqStart)}">${pct(eqStart)}</b><b style="color:${col(vNow-1)}">${kr(vNow*1e5)}<small>${krs((vNow-1)*1e5)}</small></b>
+    ${first?'':`<span>Siden dit sidste valg</span><b style="color:${col(eqSince)}">${pct(eqSince)}</b><b style="color:${col(valSince)}">${pct(valSince)}</b>`}</div>`;
+  $('dSince').innerHTML=`<div class="bign" style="color:${col(bigN[0])}">${pct(bigN[0])}<span>${bigN[1]}</span></div><div class="kline">${kline}</div><div class="newsub">${n[1]}${first?'':` <span style="opacity:.8">Dit sidste valg var for ${per.replace('de seneste ','').replace('det seneste ','1 ')} siden.</span>`}</div>${rows}`;
+  $('dBtns').innerHTML=S.inEq?'<button class="btn ghost" data-a="Behold">Behold aktierne</button><button class="btn ghost" data-a="Sælg">Sælg aktierne</button>'
+    :'<button class="btn ghost" data-a="Bliv ude">Bliv ude</button><button class="btn ghost" data-a="Køb">Køb tilbage</button>';
+  $('dBtns').querySelectorAll('button').forEach(b=>b.onclick=()=>act(b.dataset.a,st));
+  $('sheet').classList.add('on');setTimeout(()=>{const b=$('dBtns').querySelector('button');if(b)b.focus({preventScroll:true});},460);
+  if(st.type==='crash'){document.querySelector('.wrap').classList.remove('shake');void document.body.offsetWidth;document.querySelector('.wrap').classList.add('shake');
+    const f=$('flash');f.style.background='rgba(255,40,70,.25)';f.style.opacity=1;setTimeout(()=>f.style.opacity=0,220);}
+}
+function act(a,st){if(!$('sheet').classList.contains('on'))return;$('sheet').classList.remove('on');$('dBtns').innerHTML='';
+  S.log.push({m:S.k,act:a,type:st.type,eqDd:st.dd});
+  if(a==='Sælg')S.inEq=false;if(a==='Køb')S.inEq=true;
+  S.lastStopVal=S.v[S.v.length-1];S.lastStopEq=S.eqIdx;S.si++;updHud();draw();
+  $('goBtn').disabled=false;$('goBtn').textContent=S.si<S.stops.length?'Fortsæt ▶':'Kør til slut ▶';setTimeout(run,350);}
+
+/* ---------- afsløring ---------- */
+function stats(w,start){let v=1,pk=1,mdd=0;for(let k=0;k<LEN;k++){const r=M[start+k];v*=1+w*r[1]+(1-w)*r[2];pk=Math.max(pk,v);mdd=Math.min(mdd,v/pk-1);}return {v,mdd,cagr:Math.pow(v,1/10)-1};}
+function finish(){$('play').classList.add('hidden');$('reveal').classList.remove('hidden');
+  $('rPeriod').textContent=`${mlab(P.start)} – ${mlab(P.start+LEN-1)}`;
+  const v=S.v[LEN],h=S.h[LEN];$('rYou').textContent=kr(v*1e5);$('rHold').textContent=kr(h*1e5);
+  const trades=S.log.filter(l=>l.act==='Sælg'||l.act==='Køb').length;
+  const th=trades===1?'Din ene handel':`Dine ${trades} handler`;
+  $('rMsg').innerHTML=!trades?`Du gjorde ingenting, og det var også en beslutning. I alle ${S.log.length} situationer beholdt du aktierne.`
+    :v<h?`${th} kostede dig <span class="dn">${kr((h-v)*1e5)}</span> i forhold til at gøre ingenting. Én periode er ét eksempel. Prøv en anden.`
+    :`${th} gav <span class="up">${kr((v-h)*1e5)}</span> mere end at gøre ingenting. Var det dygtighed eller held? Én periode er ét eksempel. Prøv en anden.`;
+  $('rLog').innerHTML=S.log.map(l=>{const lab=mlab(P.start+l.m-1);
+    const lbl={crash:'Fald',v:'Comeback',rally:'Stigning',calm:'Status'}[l.type];
+    return `<div><span>${lab} · ${lbl}</span><b class="${l.act==='Sælg'?'dn':l.act==='Køb'?'up':''}">${l.act}</b></div>`;}).join('')||'<div><span>Ingen situationer</span></div>';
+  let rows='<tr><th>Fordeling</th><th>Slutværdi</th><th>Pr. år</th><th>Maks. fald</th></tr>';
+  [[1,'100 % aktier'],[0.6,'60/40'],[0.3,'30/70'],[0,'100 % obligationer']].forEach(([w,l])=>{const s=stats(w,P.start);rows+=`<tr><td>${l}${w===S.w?' ←':''}</td><td>${kr(s.v*1e5)}</td><td>${pct(s.cagr,1)}</td><td>${pct(s.mdd)}</td></tr>`;});
+  $('rTab').innerHTML=rows;
+  requestAnimationFrame(()=>draw(true));window.scrollTo({top:0,behavior:RM?'auto':'smooth'});$('rPeriod').focus({preventScroll:true});}
+$('againBtn').onclick=()=>{let i;do{i=STARTS[Math.floor(Math.random()*STARTS.length)];}while(Math.abs(i-P.start)<12&&STARTS.length>24);P.start=i;showStart();};
+$('sameBtn').onclick=()=>showStart();
+function showStart(){$('reveal').classList.add('hidden');$('play').classList.add('hidden');$('start').classList.remove('hidden');window.scrollTo({top:0,behavior:RM?'auto':'smooth'});}
+let lastW=innerWidth;addEventListener('resize',()=>{if(innerWidth===lastW||!S)return;lastW=innerWidth;$('reveal').classList.contains('hidden')?draw():draw(true);});
+$('foot').textContent=`Aktier: MSCI ACWI Net TR i DKK. Obligationer: Bloomberg Global Aggregate, valutaafdækket (EUR-afdækket til 2011, derefter DKK-afdækket). Rigtige månedsafkast fra en 10-årsperiode mellem ${mlab(0)} og ${mlab(M.length-1)}; alle får samme periode i dag. Kilde: MSCI og Bloomberg, hentet via Bloomberg. Fast fordeling, rebalanceret månedligt. Sælger du, står pengene i obligationer. Maks. fald er målt på månedsslut. Før skat og omkostninger. Handler er gratis her; i virkeligheden koster hver handel kurtage og spread og evt. skat. Historiske afkast er ingen garanti for fremtidige.`;
+</script>
+</body>
+</html>

@@ -174,7 +174,7 @@ canvas{display:block;width:100%;touch-action:pan-y}
 const DATA=/*DATA*/null;
 const M=DATA.months, SEC=DATA.sectors, NS=SEC.length;
 const FEE_EQ=0.0007, FEE_BD=0.0010, FEE_TILT=0.0025;   // indeksfond, obligationsfond, ekstra for sektor-ETF'er på den overvægtede del
-const N_PATHS=1000, BLOCK=12;
+const N_PATHS=4000, BLOCK=12;   // 4.000 fremtider: "slår benchmark" svinger kun ca. ±1 procentpoint mellem kørsler
 const $=id=>document.getElementById(id);
 const pct=(x,d=1)=>{const t=(Math.abs(x)*100).toFixed(d);return (+t===0?'':x<0?'−':'')+t.replace('.',',')+' %';};
 const spct=(x,d=1)=>{const t=(Math.abs(x)*100).toFixed(d);return (+t===0?'':x<0?'−':'+')+t.replace('.',',')+' %';};
@@ -323,7 +323,7 @@ function renderHist(){
 }
 function renderMC(){
   const r=monteCarlo();drawMC(r);const v0=1e5;
-  $('mcHead').textContent=`1.000 mulige fremtider for 100.000 kr. over ${S.H} år`;
+  $('mcHead').textContent=`4.000 mulige fremtider for 100.000 kr. over ${S.H} år, trukket fra historien`;
   $('hindRow').classList.toggle('hidden',!r.tilt);
   $('tMC').innerHTML=
     tile('Midterste udfald',kkr(r.med*v0),`halvdelen ender over · benchmark ${kkr(r.bmed*v0)}`,'',true)+
@@ -337,7 +337,7 @@ function renderMC(){
     const risk=h.you.vol>h.bench.vol*1.01?'med større udsving':h.you.vol<h.bench.vol*0.99?'med lidt mindre udsving':'med samme udsving';
     const nb=Math.round(plain.beat*100),hb=Math.round(hind.beat*100);
     msg=!S.hind
-      ?`Ingen ved, hvilke sektorer der vinder fremover. Her har dine sektorvalg derfor samme forventede afkast som markedet. Så slår du benchmark i <b>${nb} af 100</b> fremtider, ${risk} og lidt højere omkostninger. Med <b>Bagklogskab</b> ville det være ${hb} af 100, ${hb>nb?`fordi dine sektorer klarede sig godt i 2001–${ay}`:`fordi dine sektorer faktisk klarede sig dårligere end markedet i 2001–${ay}`}.`
+      ?`Ingen ved, hvilke sektorer der vinder fremover. Her har dine sektorvalg derfor samme forventede afkast som markedet. Så slår du benchmark i <b>${nb} af 100</b> fremtider, ${risk} og lidt højere omkostninger. Med <b>Bagklogskab</b> ville det være ${hb} af 100, ${h.you.cagr>h.bench.cagr?`fordi dine sektorer klarede sig bedre end markedet i 2001–${ay}`:`fordi dine sektorer faktisk klarede sig dårligere end markedet i 2001–${ay}`}.`
       :`Med bagklogskab slår du benchmark i <b>${hb} af 100</b> fremtider. Det forudsætter, at fremtiden gentager 2001–${ay}. Det ved ingen. Uden bagklogskab er det ${nb} af 100.`;
   }
   else msg=`Over ${S.H} år taber du penge i <b>${Math.round(r.loss*100)} af 100</b> fremtider, før inflation. Jo længere tid, jo sjældnere taber du, men faldene undervejs forsvinder ikke. Prøv 1 år og 20 år.`;
