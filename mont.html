@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b17">
+<title>Plat eller krone</title>
+<meta name="description" content="Fælles møntkast i salen: hvem kan ramme rigtigt flest gange i træk, og hvad har det med fondsforvaltere at gøre?">
+<style>
+:root{--bg:#070b17;--card:rgba(255,255,255,.08);--card2:rgba(255,255,255,.11);--line:rgba(255,255,255,.14);--ink:#f4f6fb;--muted:#a3adc4;
+  --a1:#8b5cff;--a2:#22d3ee;--gold:#fbbf24;--gold2:#f59e0b;--bad:#ff5d73;--good:#34d399}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:radial-gradient(1000px 700px at 90% -10%,rgba(139,92,255,.25),transparent 60%),radial-gradient(800px 600px at -10% 110%,rgba(34,211,238,.16),transparent 60%),var(--bg)}
+button{font:inherit;color:inherit}
+.scene{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;padding:clamp(16px,4vw,56px) clamp(16px,5vw,72px) 92px;opacity:0;pointer-events:none;transition:opacity .5s ease,transform .5s ease;transform:translateY(14px);overflow-y:auto}
+.scene.on{opacity:1;pointer-events:auto;transform:none}
+.inner{width:100%;display:flex;flex-direction:column;align-items:center}
+.kicker{font-size:clamp(12px,1.4vw,16px);letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--a2);margin-bottom:12px;text-align:center}
+h1{font-size:clamp(34px,6.4vw,92px);line-height:1;margin:0 0 18px;letter-spacing:-.03em;text-align:center}
+h2{font-size:clamp(26px,4vw,58px);line-height:1.05;margin:0 0 14px;letter-spacing:-.02em;text-align:center}
+.grad{background:linear-gradient(90deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.goldt{background:linear-gradient(90deg,var(--gold),#fde68a,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:clamp(16px,2vw,26px);color:var(--muted);text-align:center;max-width:900px;margin:0 auto}
+.btn{border:0;border-radius:16px;padding:clamp(12px,1.6vw,18px) clamp(20px,2.6vw,34px);font-weight:800;font-size:clamp(16px,1.8vw,22px);cursor:pointer;color:#fff;
+  background:linear-gradient(90deg,var(--a1),var(--a2));box-shadow:0 12px 34px rgba(139,92,255,.35);transition:transform .15s}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.35;cursor:default}
+.btn.ghost{background:var(--card2);box-shadow:none;border:1px solid var(--line)}
+.row{display:flex;gap:clamp(12px,2vw,28px);flex-wrap:wrap;justify-content:center;align-items:stretch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(16px,2vw,28px);backdrop-filter:blur(10px)}
+/* intro */
+.arms{display:flex;gap:clamp(18px,5vw,80px);margin:22px 0 26px}
+.arm{text-align:center}
+.arm .ic{font-size:clamp(64px,10vw,140px);line-height:1;filter:drop-shadow(0 10px 30px rgba(0,0,0,.5))}
+.arm b{display:block;font-size:clamp(20px,2.6vw,36px);margin-top:8px}
+.arm span{color:var(--muted);font-size:clamp(13px,1.4vw,18px)}
+.stepper{display:flex;align-items:center;gap:14px;justify-content:center;margin:6px 0 22px}
+.stepper button{width:48px;height:48px;border-radius:14px;border:1px solid var(--line);background:var(--card2);font-size:24px;font-weight:800;cursor:pointer}
+.stepper output{font-size:clamp(34px,4vw,54px);font-weight:900;min-width:2.5ch;text-align:center;font-variant-numeric:tabular-nums}
+/* game */
+.game{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:center;width:100%;max-width:1400px}
+@media(max-width:820px){.game{grid-template-columns:1fr}}
+.stage{display:flex;flex-direction:column;align-items:center}
+.coinwrap{perspective:1100px;width:clamp(180px,24vw,320px);height:clamp(180px,24vw,320px);margin:6px 0 16px;position:relative}
+.coin{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 1.8s cubic-bezier(.17,.67,.21,1)}
+.face{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;display:grid;place-items:center;text-align:center;
+  background:radial-gradient(circle at 32% 28%,#fff6c9 0%,#fbbf24 28%,#d48a06 66%,#8a5300 100%);
+  box-shadow:inset 0 0 0 10px rgba(255,255,255,.18),inset 0 0 0 18px rgba(138,83,0,.45),inset 0 -14px 30px rgba(0,0,0,.35),0 24px 60px rgba(245,158,11,.35)}
+.face div{font-weight:900;color:#5a3500;letter-spacing:.04em;font-size:clamp(22px,3vw,40px);text-shadow:0 1px 0 rgba(255,255,255,.5)}
+.face small{display:block;font-size:clamp(40px,6vw,78px);line-height:1;margin-bottom:6px}
+.face.back{transform:rotateY(180deg)}
+.shadow{position:absolute;left:15%;right:15%;bottom:-26px;height:22px;border-radius:50%;background:radial-gradient(rgba(0,0,0,.55),transparent 70%);transition:transform .9s ease}
+.flipping .shadow{transform:scale(.6)}
+.result{height:clamp(44px,6vw,80px);font-size:clamp(30px,5vw,72px);font-weight:900;letter-spacing:.06em;text-align:center}
+.prompt{font-size:clamp(16px,2vw,26px);color:var(--muted);text-align:center;min-height:2.6em}
+.panel{display:flex;flex-direction:column;gap:14px}
+.stat{background:var(--card2);border-radius:20px;padding:clamp(14px,1.6vw,22px)}
+.stat .lbl{font-size:clamp(11px,1.1vw,14px);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:800}
+.stat .v{font-size:clamp(34px,4.6vw,66px);font-weight:900;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums}
+.stat .s{font-size:clamp(13px,1.3vw,17px);color:var(--muted)}
+.bar{height:10px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;border-radius:5px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.streak{display:flex;gap:6px;flex-wrap:wrap;min-height:22px}
+.streak i{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 0 12px rgba(251,191,36,.6);animation:pop .4s ease}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(22px,1fr));gap:5px;margin-top:6px}
+.people i{aspect-ratio:1;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));transition:all .6s ease}
+.people i.out{background:rgba(255,255,255,.08);transform:scale(.55)}
+.people i.star{background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 0 18px rgba(251,191,36,.8);transform:scale(1.25)}
+.standing{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}
+.standing .stepper{margin:0}
+.note{font-size:clamp(12px,1.2vw,15px);color:var(--muted)}
+.toast{position:fixed;left:50%;top:22px;transform:translateX(-50%) translateY(-120%);background:#fff;color:#0a0f1f;font-weight:800;padding:12px 18px;border-radius:14px;transition:transform .4s;z-index:20;max-width:90vw;text-align:center}
+.toast.on{transform:translateX(-50%) translateY(0)}
+/* winner */
+.big{font-size:clamp(60px,12vw,190px);font-weight:900;line-height:.9;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2vw,28px);width:100%;max-width:1100px;margin-top:18px}
+@media(max-width:640px){.vs{grid-template-columns:1fr}}
+.qs{display:flex;flex-direction:column;gap:10px;margin-top:16px;align-items:center}
+.qs div{font-size:clamp(18px,2.4vw,32px);font-weight:700;opacity:0;transform:translateY(10px);transition:all .5s}
+.qs div.on{opacity:1;transform:none}
+/* funds */
+#fundCv{width:min(100%,1100px);height:clamp(200px,34vh,400px);display:block;border-radius:20px;background:rgba(255,255,255,.03)}
+.yrs{display:flex;gap:8px;justify-content:center;margin:14px 0 6px;flex-wrap:wrap}
+.yrs span{padding:6px 12px;border-radius:999px;background:var(--card2);color:var(--muted);font-weight:800;font-size:clamp(12px,1.3vw,16px);transition:all .3s}
+.yrs span.on{background:linear-gradient(90deg,var(--a1),var(--a2));color:#fff}
+.ctrl{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:12px}
+input[type=range]{accent-color:var(--a1);width:min(320px,70vw)}
+/* spiva */
+.dots{display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(5px,.8vw,10px);width:min(520px,86vw);margin:18px auto}
+.dots i{aspect-ratio:1;border-radius:30%;background:var(--bad);opacity:0;transform:scale(.3);transition:all .35s}
+.dots i.w{background:var(--good)}
+.dots i.on{opacity:1;transform:none}
+/* three questions */
+.q3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.8vw,24px);width:100%;max-width:1300px}
+@media(max-width:900px){.q3{grid-template-columns:1fr}}
+.qc{opacity:0;transform:translateY(16px);transition:all .55s}
+.qc.on{opacity:1;transform:none}
+.qc .n{font-size:clamp(36px,4vw,56px);font-weight:900;line-height:1}
+.qc h3{font-size:clamp(19px,2vw,28px);margin:8px 0 6px}
+.qc p{font-size:clamp(14px,1.4vw,18px);color:var(--muted);margin:0}
+.qc .tag{display:inline-block;margin-top:10px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--a2)}
+#wf{width:min(100%,760px);height:auto;display:block;margin:18px auto 0}
+/* hard */
+.hard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.8vw,24px);width:100%;max-width:1300px}
+@media(max-width:900px){.hard{grid-template-columns:1fr}}
+.hard .card{text-align:center}
+.hard .num{font-size:clamp(44px,6vw,92px);font-weight:900;letter-spacing:-.03em;line-height:1}
+.hard p{color:var(--muted);font-size:clamp(14px,1.5vw,19px);margin:8px 0 0}
+/* pyramid */
+.pyr{width:min(560px,90vw);margin:10px auto 0}
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px clamp(12px,3vw,32px) calc(14px + env(safe-area-inset-bottom));z-index:10;
+  background:linear-gradient(0deg,rgba(7,11,23,.95),rgba(7,11,23,0))}
+.nav .pg{display:flex;gap:8px}
+.nav .pg button{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.22);transition:all .3s;cursor:pointer}
+.nav .pg button.on{width:28px;border-radius:5px;background:linear-gradient(90deg,var(--a1),var(--a2))}
+.nav button{border:1px solid var(--line);background:var(--card2);border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:15}
+@media(max-width:480px){.nav .pg{display:none}}
+@media(prefers-reduced-motion:reduce){.coin{transition:none}.scene{transition:none}.qc,.qs div,.dots i{transition:none}}
+.hint{position:fixed;top:12px;right:16px;font-size:12px;color:#8590a8;z-index:11}
+@media(max-width:640px){.hint{display:none}}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="toast" id="toast"></div>
+<div class="hint">Mellemrum = kast · ← → = skift · F = fuldskærm</div>
+
+<!-- 0 INTRO -->
+<section class="scene on" data-s="0">
+  <div class="kicker">Fælles møntkast</div>
+  <h1>Hvem er salens <span class="goldt">bedste forvalter?</span></h1>
+  <p class="sub">Alle rejser sig. Før hvert kast gætter du ved at række én arm op. Gætter du forkert, sætter du dig. Vi fortsætter, til der kun er én tilbage.</p>
+  <div class="arms">
+    <div class="arm"><div class="ic" style="transform:scaleX(-1)">🙋</div><b>Højre arm</b><span>= Krone 👑</span></div>
+    <div class="arm"><div class="ic">🙋</div><b>Venstre arm</b><span>= Plat 🦁</span></div>
+  </div>
+  <div class="note" style="margin-bottom:6px">Hvor mange står op?</div>
+  <div class="stepper"><button data-d="-5" aria-label="5 færre">−5</button><button data-d="-1" aria-label="Én færre">−</button><output id="nOut">50</output><button data-d="1" aria-label="Én flere">+</button><button data-d="5" aria-label="5 flere">+5</button></div>
+  <button class="btn" id="startBtn">Alle op at stå! ▶</button>
+</section>
+
+<!-- 1 GAME -->
+<section class="scene" data-s="1">
+  <div class="game">
+    <div class="stage">
+      <div class="kicker" id="roundTxt">Runde 1</div>
+      <div class="coinwrap" id="coinwrap"><div class="coin" id="coin">
+        <div class="face front"><div><small>👑</small>KRONE</div></div>
+        <div class="face back"><div><small>🦁</small>PLAT</div></div>
+      </div><div class="shadow"></div></div>
+      <div class="result" id="result" aria-live="polite">&nbsp;</div>
+      <div class="prompt" id="prompt" aria-live="polite">Gæt nu! Højre arm = krone, venstre arm = plat.</div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="flipBtn">Kast mønten 🪙</button></div>
+    </div>
+    <div class="panel">
+      <div class="stat">
+        <div class="standing"><div><div class="lbl">Står stadig</div><div class="s">Tæl efter, og ret tallet</div></div>
+          <div class="stepper"><button id="sMinus" aria-label="Én færre står">−</button><output id="sOut">50</output><button id="sPlus" aria-label="Én flere står">+</button></div></div>
+        <div class="s" id="expTxt" style="margin-top:6px"></div>
+        <div class="people" id="people"></div>
+        <div class="row" style="justify-content:flex-start;margin-top:12px"><button class="btn" id="nextBtn" disabled>Næste runde ▶</button></div>
+      </div>
+      <div class="two">
+        <div class="stat"><div class="lbl">Chancen fra start for at <b style="color:#fff">én bestemt</b> står nu</div><div class="v" id="pYou">100 %</div><div class="s" id="pYouS">før første kast</div><div class="bar"><i id="bYou" style="width:100%;background:linear-gradient(90deg,var(--a1),var(--a2))"></i></div></div>
+        <div class="stat"><div class="lbl">Chancen for at <b style="color:var(--gold)">mindst én</b> står nu</div><div class="v goldt" id="pAny">100 %</div><div class="s" id="pAnyS">blandt 50 i salen</div><div class="bar"><i id="bAny" style="width:100%;background:linear-gradient(90deg,var(--gold),var(--gold2))"></i></div></div>
+      </div>
+      <div class="stat"><div class="lbl">Rigtige i træk</div><div class="streak" id="streak"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 WINNER -->
+<section class="scene" data-s="2">
+  <div class="kicker" id="wKick">Vi har en vinder</div>
+  <h1 id="wTitle">Salens <span class="goldt">stjerneforvalter</span> 🏆</h1>
+  <p class="sub" id="wLead">Spil først møntkastet.</p>
+  <div class="vs">
+    <div class="card" style="text-align:center"><div class="kicker" style="color:var(--a2)">Chancen for at netop du klarer det</div><div class="big grad" id="wYou">–</div><div class="sub" id="wYouS">&nbsp;</div></div>
+    <div class="card" style="text-align:center;border-color:rgba(251,191,36,.4)"><div class="kicker" style="color:var(--gold)">Chancen for at mindst én i salen gør det</div><div class="big goldt" id="wAny">–</div><div class="sub" id="wAnyS">&nbsp;</div></div>
+  </div>
+  <div class="qs" id="qs">
+    <div>🎤 Hvad var din strategi?</div>
+    <div>🤔 Hvad gjorde du anderledes end dem, der satte sig?</div>
+    <div>💼 Skal du forvalte vores pensioner?</div>
+  </div>
+  <div class="row" style="margin-top:18px"><button class="btn ghost" id="askBtn">Næste spørgsmål</button><button class="btn ghost" id="againBtn">Spil igen ↻</button></div>
+</section>
+
+<!-- 3 FUNDS -->
+<section class="scene" data-s="3">
+  <div class="kicker">Nu med fonde i stedet for studerende</div>
+  <h2>Hvad hvis ingen fond var dygtig?</h2>
+  <p class="sub" id="fundSub">Hver fond har 50 % chance for at slå markedet hvert år, som en mønt.</p>
+  <div class="yrs" id="yrs"></div>
+  <canvas id="fundCv"></canvas>
+  <div class="ctrl">
+    <span class="note">Antal fonde</span><input type="range" id="fN" min="500" max="10000" step="500" value="5000"><b id="fNTxt" style="min-width:5ch">5.000</b>
+    <button class="btn" id="fundBtn">Kør 5 år ▶</button>
+  </div>
+  <p class="sub" id="fundRes" style="margin-top:12px;min-height:2.6em"></p>
+</section>
+
+<!-- 4 SPIVA -->
+<section class="scene" data-s="4">
+  <div class="kicker">Virkeligheden · S&amp;P SPIVA</div>
+  <h2>Omkring <span style="color:var(--bad)">9 ud af 10</span> aktive fonde taber til deres sammenligningsindeks over 10 år</h2>
+  <div class="dots" id="dots"></div>
+  <div class="row">
+    <div class="card" style="max-width:520px"><b style="font-size:clamp(18px,2vw,26px)">Efter omkostninger: dårligere end en mønt</b><p class="sub" style="text-align:left;font-size:clamp(14px,1.5vw,19px);margin-top:6px">En mønt ville give 50 %. Fondene taber oftere, fordi omkostningerne trækker 1–2 procentpoint fra hvert år, og fonde der lukker, tæller som tabere.</p></div>
+    <div class="card" style="max-width:520px"><b style="font-size:clamp(18px,2vw,26px)">Vinderne bliver ikke ved</b><p class="sub" style="text-align:left;font-size:clamp(14px,1.5vw,19px);margin-top:6px">Meget få af de bedste fonde i én periode er stadig blandt de bedste i den næste. Ofte færre, end ren tilfældighed ville give.</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">Kilde: S&amp;P Dow Jones Indices, SPIVA Europe Scorecard (seneste udgave) og SPIVA U.S. Persistence Scorecard.</p>
+</section>
+
+<!-- 5 THREE QUESTIONS -->
+<section class="scene" data-s="5">
+  <div class="kicker">Hvordan finder man så de dygtige?</div>
+  <h2>Tre spørgsmål til en fond</h2>
+  <div class="q3">
+    <div class="card qc"><div class="n grad">1</div><h3>Kom merafkastet bare fra mere risiko?</h3><p>Tager fonden mere markedsrisiko end markedet, stiger den mere, når alt stiger. Det er ikke dygtighed. Se også: falder den mere, når alt falder?</p><span class="tag">Beta · risikojusteret afkast · op/ned-capture</span></div>
+    <div class="card qc"><div class="n grad">2</div><h3>Kom det fra det, de siger, de er gode til?</h3><p>Siger de "vi er gode til at vælge aktier", men kom pengene fra én stor sektorvægt? Så passer historien ikke med tallene.</p><span class="tag">Selektion · allokering · erklæret edge</span></div>
+    <div class="card qc"><div class="n grad">3</div><h3>Følger de en proces, også når det går dårligt?</h3><p>Skriver de ned, hvad de forventer, og bedømmer de sig selv bagefter? Uden det ved de ikke selv, om de er dygtige eller heldige.</p><span class="tag">Proces · disciplin</span></div>
+  </div>
+  <svg id="wf" viewBox="0 0 760 250" role="img" aria-label="Eksempel: merafkast delt op i markedsrisiko og valg"></svg>
+</section>
+
+<!-- 6 HARD -->
+<section class="scene" data-s="6">
+  <div class="kicker">Men selv det er svært</div>
+  <h2>Dygtighed er næsten umulig at <span class="grad">bevise</span></h2>
+  <div class="hard">
+    <div class="card"><div class="num grad">52 %</div><p>Chancen for at en <b style="color:#fff">dygtig</b> aktievælger slår markedet på 1 måned, som i et aktiespil. En mønt giver 50 %.</p><p style="font-size:12px;margin-top:10px">5 procentpoint merafkast om året, 25 % afvigelse fra markedet.</p></div>
+    <div class="card"><div class="num goldt">~28 år</div><p>Så længe skal selv en god fond vise resultater, før de er statistisk signifikante, altså før man med rimelighed kan afvise, at det var held. For aktievælgeren til venstre: ~100 år.</p><p style="font-size:12px;margin-top:10px">God fond: 3 procentpoint merafkast om året, 8 % afvigelse fra markedet (IR ≈ 0,375). Aktievælgeren: 5 procentpoint og 25 % (IR 0,2). Krav: t ≈ 2.</p></div>
+    <div class="card"><div class="num" style="color:var(--bad)">±7 %</div><p>Så meget kan aktievælgerens afkast svinge i forhold til markedet på én måned. Dygtigheden er kun ca. 0,4 procentpoint om måneden. Tilfældighederne overdøver den.</p></div>
+  </div>
+</section>
+
+<!-- 7 CONCLUSION -->
+<section class="scene" data-s="7">
+  <div class="kicker">Hvad betyder det for dig?</div>
+  <h2>Byg en <span class="grad">pyramide</span></h2>
+  <svg class="pyr" viewBox="0 0 560 330" role="img" aria-label="Pyramide med en billig global base og en lille aktiv top">
+    <defs><linearGradient id="gb" x1="0" x2="1"><stop offset="0" stop-color="#5b7cff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+      <linearGradient id="gt" x1="0" x2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs>
+    <polygon points="280,10 380,120 180,120" fill="url(#gt)" opacity=".95"/>
+    <polygon points="178,126 382,126 530,320 30,320" fill="url(#gb)" opacity=".95"/>
+    <text x="280" y="95" text-anchor="middle" font-size="22" font-weight="900" fill="#3b2400">Leg her</text>
+    <text x="280" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#3b2400">højst 10–20 %</text>
+    <text x="280" y="228" text-anchor="middle" font-size="30" font-weight="900" fill="#fff">Hele verden, billigt</text>
+    <text x="280" y="258" text-anchor="middle" font-size="16" font-weight="700" fill="rgba(255,255,255,.85)">global indeksfond · 80–90 %</text>
+  </svg>
+  <p class="sub" style="margin-top:14px">Vil du vælge selv, så gør det i toppen. Mål hele porteføljen mod markedet, og giv det mange år. Én måned siger næsten intet.</p>
+  <div class="row" style="margin-top:16px"><a class="btn" href="portefolje.html" style="text-decoration:none">Byg din egen portefølje →</a></div>
+</section>
+
+<div class="nav">
+  <button id="prev">← Tilbage</button>
+  <div class="pg" id="pg"></div>
+  <button id="next">Videre →</button>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const scenes=[...document.querySelectorAll('.scene')];
+let cur=0;
+const fmtPct=x=>{if(x>=0.995&&x<1)return '>99 %';if(x>=0.1)return Math.round(x*100)+' %';if(x>=0.01)return (x*100).toFixed(1).replace('.',',')+' %';if(x>=0.001)return (x*100).toFixed(2).replace('.',',')+' %';return (x*100).toFixed(3).replace('.',',')+' %';};
+const oneIn=k=>'1 ud af '+Math.pow(2,k).toLocaleString('da-DK');
+const pAny=(k,n)=>1-Math.pow(1-Math.pow(0.5,k),n);
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2600);}
+
+/* ---------- tilpas hver scene til skærmen ---------- */
+scenes.forEach(sc=>{const w=document.createElement('div');w.className='inner';while(sc.firstChild)w.appendChild(sc.firstChild);sc.appendChild(w);});
+function fit(sc){const w=sc.querySelector('.inner');w.style.zoom=1;if(innerWidth<700)return;const cs=getComputedStyle(sc),avail=sc.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  const z=Math.max(0.55,Math.min(1,avail/w.scrollHeight));w.style.zoom=z;}
+addEventListener('resize',()=>fit(scenes[cur]));
+/* ---------- navigation ---------- */
+scenes.forEach((s,i)=>{const d=document.createElement('button');d.setAttribute('aria-label','Scene '+(i+1));d.onclick=()=>go(i);$('pg').appendChild(d);});
+function go(i){if(F.timer){clearInterval(F.timer);F.timer=null;$('fundBtn').disabled=false;$('fN').disabled=false;}cur=Math.max(0,Math.min(scenes.length-1,i));scenes.forEach((s,j)=>s.classList.toggle('on',j===cur));
+  [...$('pg').children].forEach((d,j)=>d.classList.toggle('on',j===cur));fit(scenes[cur]);onEnter(cur);fit(scenes[cur]);}
+$('prev').onclick=()=>go(cur-1);$('next').onclick=()=>go(cur+1);
+addEventListener('keydown',e=>{
+  if(e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.target.matches&&e.target.matches('input')&&e.key.startsWith('Arrow'))return;
+  if(e.key==='ArrowRight'||e.key==='PageDown')go(cur+1);
+  else if(e.key==='ArrowLeft'||e.key==='PageUp')go(cur-1);
+  else if(e.key===' '){e.preventDefault();if(cur===1){if(!$('flipBtn').disabled)flip();else if(!$('nextBtn').disabled)nextRound();}else if(cur===3)$('fundBtn').click();}
+  else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{});}
+});
+function onEnter(i){if(i===1&&G.k===0&&!G.flipping&&$('nextBtn').disabled&&G.stand!==G.n)resetGame();if(i===2)fillWin();if(i===3){F.year=0;F.alive=null;$('fundBtn').textContent='Kør 5 år ▶';drawFunds(true);}if(i===4)animDots();if(i===5)animQ();}
+
+/* ---------- intro ---------- */
+const G={n:50,stand:50,k:0,prevStand:50,flipping:false,angle:0,last:null,done:false,shared:false};
+document.querySelectorAll('[data-s="0"] .stepper button').forEach(b=>b.onclick=()=>{G.n=Math.max(2,Math.min(150,G.n+ +b.dataset.d));$('nOut').textContent=G.n;resetGame();});
+$('startBtn').onclick=()=>{resetGame();go(1);};
+function resetGame(){Object.assign(G,{stand:G.n,prevStand:G.n,k:0,flipping:false,last:null,done:false,shared:false});
+  $('streak').innerHTML='';$('result').innerHTML='&nbsp;';$('prompt').textContent='Gæt nu! Højre arm = krone, venstre arm = plat.';
+  $('flipBtn').disabled=false;$('nextBtn').disabled=true;$('roundTxt').textContent='Runde 1';renderPeople();updStats();}
+
+/* ---------- people grid ---------- */
+function renderPeople(){const box=$('people');if(box.children.length!==G.n){box.innerHTML='';for(let i=0;i<G.n;i++)box.appendChild(document.createElement('i'));}
+  [...box.children].forEach((e,i)=>{e.classList.toggle('out',i>=G.stand);e.classList.toggle('star',G.stand===1&&i===0);});
+  $('sOut').textContent=G.stand;
+  const e=G.n*Math.pow(.5,G.k+($('nextBtn').disabled?0:1));$('expTxt').textContent=`Forventet ved ren tilfældighed: ${e.toFixed(1).replace('.',',')}`;}
+function setStand(v){if(G.flipping)return;const lo=$('nextBtn').disabled?1:0;G.stand=Math.max(lo,Math.min(G.prevStand,v));renderPeople();}
+$('sMinus').onclick=()=>setStand(G.stand-1);$('sPlus').onclick=()=>setStand(G.stand+1);
+
+/* ---------- stats ---------- */
+function updStats(){const k=G.k,py=Math.pow(0.5,k),pa=pAny(k,G.n);
+  $('pYou').textContent=fmtPct(py);$('pYouS').textContent=k?`${oneIn(k)} rammer ${k} rigtige i træk`:'før første kast';
+  $('pAny').textContent=fmtPct(pa);$('pAnyS').textContent=`blandt ${G.n} i salen`;
+  $('bYou').style.width=Math.max(0.6,py*100)+'%';$('bAny').style.width=Math.max(0.6,pa*100)+'%';}
+
+/* ---------- coin ---------- */
+function fairCoin(){const a=new Uint8Array(1);crypto.getRandomValues(a);return a[0]&1;} // 0 = krone, 1 = plat
+function flip(){if(G.flipping)return;G.flipping=true;$('flipBtn').disabled=true;
+  const r=fairCoin();G.last=r;$('result').innerHTML='&nbsp;';$('prompt').textContent='…';
+  const turns=6+Math.floor(Math.random()*3);G.angle=Math.ceil(G.angle/360)*360+turns*360+(r?180:0);
+  $('coinwrap').classList.add('flipping');$('coin').style.transform=`rotateY(${G.angle}deg) rotateX(${8}deg)`;
+  setTimeout(()=>{$('coinwrap').classList.remove('flipping');
+    $('result').innerHTML=r?'<span style="color:#fde68a">🦁 PLAT</span>':'<span style="color:#fde68a">👑 KRONE</span>';
+    $('prompt').innerHTML=r?'Havde du <b>højre</b> arm oppe? Sæt dig ned.':'Havde du <b>venstre</b> arm oppe? Sæt dig ned.';
+    G.flipping=false;G.prevStand=G.stand;$('nextBtn').disabled=false;setStand(Math.round(G.stand/2));
+    burst(innerWidth*0.28,innerHeight*0.42,26,['#fbbf24','#fde68a','#f59e0b']);},1850);}
+$('flipBtn').onclick=flip;
+function nextRound(){
+  if(G.stand===0&&G.k===0){G.stand=G.prevStand;renderPeople();toast('Alle satte sig. Vi tager runden om.');prep();return;}
+  if(G.stand===0){G.stand=G.prevStand;G.shared=true;renderPeople();G.done=true;$('nextBtn').disabled=true;toast('Alle satte sig i samme runde. De sidste '+G.stand+' deler førstepladsen.');win();return;}
+  G.k++;const d=document.createElement('i');$('streak').appendChild(d);updStats();
+  if(G.stand===1){G.done=true;$('nextBtn').disabled=true;win();return;}
+  prep();}
+function prep(){$('roundTxt').textContent='Runde '+(G.k+1);$('result').innerHTML='&nbsp;';$('prompt').textContent='Gæt nu! Højre arm = krone, venstre arm = plat.';$('flipBtn').disabled=false;$('nextBtn').disabled=true;}
+$('nextBtn').onclick=nextRound;
+
+/* ---------- winner ---------- */
+let qi=0;
+function fillWin(){if(!G.done){$('wKick').textContent='Møntkast';$('wTitle').innerHTML='Spil først <span class="goldt">møntkastet</span>';$('wLead').textContent='Gå tilbage, og kast mønten, til der er én tilbage.';
+    ['wYou','wAny'].forEach(id=>$(id).textContent='–');['wYouS','wAnyS'].forEach(id=>$(id).innerHTML='&nbsp;');return;}
+  const k=G.k,exp=G.n*Math.pow(.5,k);
+  $('wKick').textContent=G.shared?'Delt førsteplads':'Vi har en vinder';
+  $('wTitle').innerHTML=G.shared?`Salens <span class="goldt">stjerneforvaltere</span> 🏆`:`Salens <span class="goldt">stjerneforvalter</span> 🏆`;
+  $('wLead').innerHTML=`<b style="color:#fff">${k}</b> rigtige i træk${G.shared?` for ${G.stand} personer`:''}. Det ser imponerende ud.`;
+  $('wYou').textContent=fmtPct(Math.pow(0.5,k));$('wYouS').textContent=oneIn(k);
+  $('wAny').textContent=fmtPct(pAny(k,G.n));
+  $('wAnyS').innerHTML=`blandt ${G.n} i salen. Forventet antal med ${k} i træk: <b style="color:#fff">${exp.toFixed(1).replace('.',',')}</b>. Og fordi vi bliver ved, til der er én tilbage, kårer vi altid en vinder.`;}
+function win(){fillWin();
+  qi=0;[...$('qs').children].forEach(e=>e.classList.remove('on'));
+  setTimeout(()=>{go(2);bigConfetti();},500);}
+$('askBtn').onclick=()=>{const q=[...$('qs').children];if(qi<q.length)q[qi++].classList.add('on');};
+$('againBtn').onclick=()=>{resetGame();go(1);};
+
+/* ---------- funds ---------- */
+const F={n:5000,alive:null,year:0,timer:null};
+$('fN').oninput=e=>{if(F.timer)return;F.n=+e.target.value;$('fNTxt').textContent=F.n.toLocaleString('da-DK');F.year=0;F.alive=null;drawFunds(true);};
+function yrsBar(){$('yrs').innerHTML=['Start','År 1','År 2','År 3','År 4','År 5'].map((t,i)=>`<span class="${i===F.year?'on':''}">${t}</span>`).join('');}
+function drawFunds(reset){
+  const cv=$('fundCv'),dpr=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+  if(reset||!F.alive){F.alive=new Uint8Array(F.n).fill(1);F.year=0;}
+  const cols=Math.ceil(Math.sqrt(F.n*W/H)),rows=Math.ceil(F.n/cols),cw=W/cols,ch=H/rows,s=Math.max(1,Math.min(cw,ch)-1.2);
+  let alive=0;
+  for(let i=0;i<F.n;i++){const c=i%cols,r=Math.floor(i/cols),a=F.alive[i];if(a)alive++;
+    x.fillStyle=a?(F.year>=5?'#fbbf24':F.year?'#8b5cff':'#5b7cff'):'rgba(255,255,255,.06)';
+    x.fillRect(c*cw+(cw-s)/2,r*ch+(ch-s)/2,s,s);}
+  yrsBar();
+  const exp=Math.round(F.n*Math.pow(0.5,F.year));
+  $('fundRes').innerHTML=F.year===0?`${F.n.toLocaleString('da-DK')} fonde, og ingen af dem er dygtige.`
+    :F.year<5?`Efter ${F.year} år har <b style="color:#fff">${alive.toLocaleString('da-DK')}</b> fonde slået markedet alle år indtil nu.`
+    :`<b class="goldt" style="font-size:1.3em">${alive.toLocaleString('da-DK')} fonde</b> har slået markedet 5 år i træk, <b style="color:#fff">af rent held</b>. Forventet: ${exp.toLocaleString('da-DK')}. Det er dem, der havner i avisen.`;
+  return alive;}
+$('fundBtn').onclick=()=>{if(F.timer)return;if(F.year>=5){F.year=0;F.alive=null;drawFunds(true);}
+  $('fundBtn').disabled=true;$('fN').disabled=true;
+  F.timer=setInterval(()=>{if(!F.alive){clearInterval(F.timer);F.timer=null;$('fundBtn').disabled=false;$('fN').disabled=false;return;}const a=new Uint8Array(F.n);crypto.getRandomValues(a);
+    for(let i=0;i<F.n;i++)if(F.alive[i]&&(a[i]&1))F.alive[i]=0;
+    F.year++;const al=drawFunds(false);
+    if(F.year>=5){clearInterval(F.timer);F.timer=null;$('fundBtn').disabled=false;$('fN').disabled=false;$('fundBtn').textContent='Kør igen ↻';
+      const r=$('fundCv').getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,40,['#fbbf24','#fde68a']);}},900);};
+addEventListener('resize',()=>{if(cur===3)drawFunds(false);});
+
+/* ---------- SPIVA dots ---------- */
+const dots=$('dots');for(let i=0;i<50;i++){const d=document.createElement('i');if([4,17,23,36,48].includes(i))d.classList.add('w');dots.appendChild(d);}
+function animDots(){[...dots.children].forEach((d,i)=>{d.classList.remove('on');setTimeout(()=>d.classList.add('on'),40+i*28);});}
+
+/* ---------- three questions + waterfall ---------- */
+function animQ(){const q=[...document.querySelectorAll('.qc')];q.forEach(e=>e.classList.remove('on'));q.forEach((e,i)=>setTimeout(()=>e.classList.add('on'),250+i*450));drawWF();}
+function drawWF(){ // eksempel: +3 pct.-point merafkast = 1 fra mere risiko + 2 fra valg
+  const svg=$('wf'),items=[['Mere risiko (beta)',1,'#6d8cff'],['Aktievalg (selektion)',2,'#22d3ee'],['Merafkast i alt',3,'#fbbf24']];
+  const L=250,W=760,top=46,bh=46,gap=20,sc=(W-L-170)/3;
+  let s=`<text x="0" y="22" fill="#8d97b0" font-size="15" font-weight="700">EKSEMPEL · en fond slog markedet med 3 procentpoint</text>`;
+  let acc=0;items.forEach(([lbl,v,col],i)=>{const y=top+i*(bh+gap),x0=i<2?L+acc*sc:L,w=v*sc;
+    s+=`<text x="${L-14}" y="${y+bh/2+6}" text-anchor="end" fill="#f4f6fb" font-size="17" font-weight="700">${lbl}</text>`;
+    s+=`<rect x="${x0}" y="${y}" width="0" height="${bh}" rx="10" fill="${col}"><animate attributeName="width" from="0" to="${w}" dur=".7s" begin="${1.6+i*.5}s" fill="freeze" calcMode="spline" keySplines=".2 .8 .2 1"/></rect>`;
+    s+=`<text x="${x0+w+10}" y="${y+bh/2+7}" fill="${col}" font-size="20" font-weight="900" opacity="0">+${v} pct.-point<animate attributeName="opacity" from="0" to="1" dur=".3s" begin="${2.2+i*.5}s" fill="freeze"/></text>`;
+    if(i<2)acc+=v;});
+  svg.innerHTML=s;if(svg.setCurrentTime)svg.setCurrentTime(0);}
+
+/* ---------- confetti ---------- */
+const cc=$('confetti'),cx=cc.getContext('2d');let parts=[],raf=null;
+function sizeC(){const d=devicePixelRatio||1;cc.width=innerWidth*d;cc.height=innerHeight*d;cx.setTransform(d,0,0,d,0,0);}sizeC();addEventListener('resize',sizeC);
+function burst(x,y,n,cols){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=3+Math.random()*6;parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-3,g:.18,r:3+Math.random()*4,c:cols[i%cols.length],life:60+Math.random()*30,rot:Math.random()*6,vr:(Math.random()-.5)*.3});}loop();}
+function bigConfetti(){const cols=['#fbbf24','#fde68a','#8b5cff','#22d3ee','#ffffff','#f59e0b'];
+  for(let k=0;k<3;k++)setTimeout(()=>{burst(innerWidth*.2,innerHeight*.35,70,cols);burst(innerWidth*.8,innerHeight*.35,70,cols);burst(innerWidth*.5,innerHeight*.25,90,cols);},k*350);}
+function loop(){if(raf)return;const f=()=>{cx.clearRect(0,0,innerWidth,innerHeight);
+  parts=parts.filter(p=>p.life>0);for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=.99;p.rot+=p.vr;p.life--;
+    cx.save();cx.globalAlpha=Math.min(1,p.life/30);cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillStyle=p.c;cx.fillRect(-p.r,-p.r/2,p.r*2,p.r);cx.restore();}
+  if(parts.length)raf=requestAnimationFrame(f);else{raf=null;cx.clearRect(0,0,innerWidth,innerHeight);}};raf=requestAnimationFrame(f);}
+
+go(0);renderPeople();updStats();
+</script>
+</body>
+</html>
