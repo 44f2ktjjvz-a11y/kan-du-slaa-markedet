@@ -95,6 +95,12 @@ details.explain p{color:var(--muted);margin:8px 0 0}
 .takeaway p{font-size:.93rem;margin:8px 0 0}
 .sellnote{font-size:.8rem;color:var(--muted);margin:2px 0 12px;text-align:center}
 .tbldet summary{cursor:pointer;color:var(--a2);font-weight:700;font-size:.85rem;margin:2px 0 8px}
+.feed{min-height:64px;display:flex;flex-direction:column;gap:6px;margin:12px 0 4px}
+.fi{background:rgba(255,255,255,.07);border-left:3px solid var(--a2);border-radius:10px;padding:7px 10px;font-size:.9rem;font-weight:700;animation:fin .4s ease}
+.fi span{display:block;font-size:.68rem;color:var(--muted);font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.fi.old{opacity:.55;font-weight:600;font-size:.82rem;border-left-color:rgba(255,255,255,.25)}
+@keyframes fin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.gap{font-size:.88rem;margin-top:8px;background:rgba(255,255,255,.06);border-radius:12px;padding:8px 11px}
 .foot{font-size:.75rem;color:var(--muted);margin-top:16px;line-height:1.5}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-top:6px}
 .legend i{display:inline-block;width:14px;height:5px;border-radius:3px;margin-right:6px;vertical-align:middle}
@@ -130,7 +136,7 @@ details.explain p{color:var(--muted);margin:8px 0 0}
         <p><b>Aktier</b> er små ejerandele i virksomheder. Her ejer du lidt af alle verdens store virksomheder på én gang. Værdien kan stige og falde meget.</p>
         <p><b>Obligationer</b> er lån til stater og store virksomheder, som betaler renter. De svinger meget mindre end aktier, men giver typisk også mindre.</p>
       </details>
-      <p style="font-size:.85rem;color:var(--muted);margin:12px 0 0">Alle i lokalet får de samme hemmelige år i dag.</p>
+      <p style="font-size:.85rem;color:var(--muted);margin:12px 0 0">Du får 10 tilfældige år. Din sidemand får nogle andre.</p>
     </div>
   </section>
 
@@ -141,7 +147,10 @@ details.explain p{color:var(--muted);margin:8px 0 0}
         <div class="st"><div class="l">Din portefølje</div><div class="v" id="hVal">100.000 kr.</div></div>
         <div class="st"><div class="l" id="hChgL">Siden start</div><div class="v" id="hChg">0 %</div></div>
       </div>
+      <div class="feed" id="feed" aria-live="polite"></div>
       <canvas id="cv" height="230" role="img" aria-label="Din porteføljes værdi over tid"></canvas>
+      <div class="legend" style="margin-top:2px"><span><i style="background:linear-gradient(90deg,var(--a1),var(--a2))"></i>Dig</span><span><i style="background:#cbd5e1"></i>Hvis du ikke gjorde noget</span></div>
+      <div class="gap hidden" id="gap"></div>
       <div class="where"><span id="when">År 1</span><span class="pos" id="pos"><i></i></span></div>
       <div class="track"><i id="prog" style="width:0"></i></div>
     </div>
@@ -211,7 +220,7 @@ const CRISES=[['2000-03','IT-boble'],['2001-09','11. sep.'],['2008-09','Finanskr
 /* ---------- periode: samme for alle i dag ---------- */
 function dayIndex(){const d=new Date(),s=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0)%STARTS.length;}
 const pin=new URLSearchParams(location.search).get('p');const pinI=pin?M.findIndex(r=>r[0]===pin):-1;
-let P={start:pinI>=0&&pinI+LEN<=M.length?pinI:STARTS[dayIndex()],w:1};
+let P={start:pinI>=0&&pinI+LEN<=M.length?pinI:STARTS[Math.floor(Math.random()*STARTS.length)],w:1}; // tilfældig for hver, så man ikke kan kopiere sidemanden
 
 /* ---------- beslutningspunkter: når markedet gør noget ---------- */
 function stopsFor(start){ // ud fra aktiemarkedet, så alle med samme periode får de samme stop
@@ -230,14 +239,28 @@ function stopsFor(start){ // ud fra aktiemarkedet, så alle med samme periode f�
   return out;
 }
 
+/*NEWS*/
+const NEWSMAP=Object.fromEntries(NEWSFEED);
+/* ---------- nyheder ---------- */
+function pushFeed(t,real){S.feed.push({t,real,k:S.k});S.lastNews=S.k;
+  const it=S.feed.slice(-2).reverse();
+  $('feed').innerHTML=it.map((f,i)=>`<div class="fi${i?' old':''}"><span>${f.real?'Nyhed':'Ekspert'} · År ${Math.floor((f.k-1)/12)+1}</span>${f.t}</div>`).join('');}
+function news(){const mo=M[P.start+S.k-1][0];
+  if(NEWSMAP[mo]){pushFeed(NEWSMAP[mo],true);return;}
+  if(S.k-S.lastNews<6||S.k<4)return;
+  // ekspertudsagn efter markedets retning det seneste halve år
+  let e6=1;for(let i=Math.max(0,S.k-6);i<S.k;i++)e6*=1+M[P.start+i][1];
+  const mood=e6<0.92?'down':e6>1.10?'up':'flat',pool=OPINION[mood].filter(t=>!S.usedOp.has(t));
+  if(!pool.length||Math.random()<0.4)return;const t=pool[Math.floor(Math.random()*pool.length)];S.usedOp.add(t);pushFeed(t,false);}
+function recentNews(){const f=[...S.feed].reverse().find(f=>f.real&&S.k-f.k<=4);return f?`I nyhederne: »${f.t}«.`:'';}
 /* ---------- spil ---------- */
 let S=null;
-function newGame(w){S={w,inEq:true,v:[1],h:[1],k:0,stops:stopsFor(P.start),si:0,log:[],lastStopVal:1,lastStopEq:1,eqIdx:1,running:false,sh:null};
+function newGame(w){S={w,inEq:true,v:[1],h:[1],k:0,stops:stopsFor(P.start),si:0,log:[],lastStopVal:1,lastStopEq:1,eqIdx:1,running:false,sh:null,feed:[],lastNews:-99,usedOp:new Set()};$('feed').innerHTML='';
   $('start').classList.add('hidden');$('reveal').classList.add('hidden');$('play').classList.remove('hidden');
   $('goBtn').textContent='Start ▶';$('goBtn').disabled=false;$('goBtn').classList.remove('hidden');$('playHint').classList.remove('hidden');$('autoHint').classList.add('hidden');updHud();draw();window.scrollTo({top:0,behavior:RM?'auto':'smooth'});}
 document.querySelectorAll('#mix button').forEach(b=>b.onclick=()=>newGame(+b.dataset.w));
 function step(){const r=M[P.start+S.k],e=r[1],b=r[2],w=S.inEq?S.w:0;
-  if(S.sh)S.sh*=1+S.w*e+(1-S.w)*b;S.v.push(S.v[S.v.length-1]*(1+w*e+(1-w)*b));S.h.push(S.h[S.h.length-1]*(1+S.w*e+(1-S.w)*b));S.eqIdx*=1+e;S.k++;}
+  if(S.sh)S.sh*=1+S.w*e+(1-S.w)*b;S.v.push(S.v[S.v.length-1]*(1+w*e+(1-w)*b));S.h.push(S.h[S.h.length-1]*(1+S.w*e+(1-S.w)*b));S.eqIdx*=1+e;S.k++;news();}
 function run(){if(S.running)return;S.running=true;$('goBtn').classList.add('hidden');$('playHint').classList.add('hidden');$('autoHint').classList.remove('hidden');
   const target=S.si<S.stops.length?S.stops[S.si].m:LEN;
   const tick=()=>{step();updHud();draw();
@@ -249,13 +272,16 @@ function updHud(){const v=S.v[S.v.length-1]*1e5,ch=S.v[S.v.length-1]-1;
   $('hVal').textContent=kr(v);$('hChg').textContent=pct(ch);$('hChg').className='v '+(ch<-0.005?'dn':ch>0.005?'up':'');
   $('when').textContent=S.k===0?'Start':S.k>=LEN?'Slut på år 10':`År ${Math.floor((S.k-1)/12)+1}`;
   $('prog').style.width=(100*S.k/LEN)+'%';
+  const traded=S.log.some(l=>l.act==='Sælg'||l.act==='Køb'),d=(S.v[S.v.length-1]-S.h[S.h.length-1])*1e5;
+  $('gap').classList.toggle('hidden',!traded);
+  if(traded)$('gap').innerHTML=`Hvis du ikke havde gjort noget: <b>${kr(S.h[S.h.length-1]*1e5)}</b><br>Du er <b class="${d>=0?'up':'dn'}">${kr(Math.abs(d))} ${d>=0?'foran':'bagud'}</b>`;
   $('pos').innerHTML=S.inEq?`<i style="background:var(--a2)"></i>${Math.round(S.w*100)}\u00a0% aktier`:`<i style="background:var(--gold)"></i>Solgt · i obligationer`;}
 
 /* ---------- graf ---------- */
 function setup(cv){const d=devicePixelRatio||1,W=cv.clientWidth;if(!cv.dataset.h)cv.dataset.h=cv.getAttribute('height');const H=+cv.dataset.h;cv.style.height=H+'px';cv.width=W*d;cv.height=H*d;const x=cv.getContext('2d');x.setTransform(d,0,0,d,0,0);return {x,W,H};}
 function draw(reveal=false){
   const cv=reveal?$('cv2'):$('cv');const {x,W,H}=setup(cv),L=48,R=8,T=12,B=22;
-  const seen=reveal?S.v.concat(S.h):S.v;let lo=Math.min(0.7,...seen),hi=Math.max(1.4,...seen);lo=Math.log(lo*.95);hi=Math.log(hi*1.05);
+  const seen=S.v.concat(S.h);let lo=Math.min(0.85,...seen),hi=Math.max(1.15,...seen);lo=Math.log(lo*.95);hi=Math.log(hi*1.05);
   const px=i=>L+(W-L-R)*i/LEN,py=v=>T+(H-T-B)*(1-(Math.log(v)-lo)/(hi-lo));
   x.font='11px system-ui';x.fillStyle='#7c869e';x.textAlign='right';
   [0.5,0.75,1,1.5,2,3,4].forEach(t=>{if(Math.log(t)<lo||Math.log(t)>hi)return;const y=py(t);x.strokeStyle=t===1?'rgba(255,255,255,.28)':'rgba(255,255,255,.07)';x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.fillText(Math.round(t*100)+'.000',L-6,y+4);});
@@ -268,6 +294,7 @@ function draw(reveal=false){
     x.strokeStyle='rgba(203,213,225,.85)';x.lineWidth=1.8;x.beginPath();S.h.forEach((v,i)=>i?x.lineTo(px(i),py(v)):x.moveTo(px(i),py(v)));x.stroke();}
   const g=x.createLinearGradient(0,0,W,0);g.addColorStop(0,'#8b5cff');g.addColorStop(1,'#22d3ee');
   const n=S.v.length-1;
+  if(!reveal){x.strokeStyle='rgba(203,213,225,.7)';x.lineWidth=1.6;x.beginPath();S.h.forEach((v,i)=>i?x.lineTo(px(i),py(v)):x.moveTo(px(i),py(v)));x.stroke();}
   if(!reveal){const gr=x.createLinearGradient(0,T,0,H-B);gr.addColorStop(0,'rgba(139,92,255,.28)');gr.addColorStop(1,'rgba(139,92,255,0)');x.fillStyle=gr;x.beginPath();x.moveTo(px(0),H-B);S.v.forEach((v,i)=>x.lineTo(px(i),py(v)));x.lineTo(px(n),H-B);x.closePath();x.fill();}
   x.strokeStyle=g;x.lineWidth=2.6;x.lineJoin='round';x.beginPath();S.v.forEach((v,i)=>i?x.lineTo(px(i),py(v)):x.moveTo(px(i),py(v)));x.stroke();
   S.log.forEach(l=>{if(l.act==='Behold'||l.act==='Bliv ude')return;const X=px(l.m),Y=py(S.v[l.m]);x.fillStyle=l.act==='Sælg'?'#ff5d73':'#34d399';x.strokeStyle='#070b17';x.lineWidth=2;x.beginPath();x.arc(X,Y,5.5,0,7);x.fill();x.stroke();});
@@ -304,7 +331,7 @@ function decide(st){const eqSince=S.eqIdx/S.lastStopEq-1,valSince=S.v[S.v.length
   $('dSince').innerHTML=`<div class="mine"><span>Din portefølje</span><b style="color:${col(you)}">${kr(vNow*1e5)}</b><em style="color:${col(you)}">${pct(you)} siden start</em></div>
     <div class="kline">${kline}</div>
     <div class="mkt">Aktiemarkedet: <b style="color:${col(mk[0])}">${pct(mk[0])}</b> ${mk[1]}</div>${outLine}
-    <div class="newsub">${n[1]}${first?'':` Dit sidste valg var for ${dur(months)} siden.`}</div>${rows}`;
+    <div class="newsub">${recentNews()||n[1]}${first?'':` Dit sidste valg var for ${dur(months)} siden.`}</div>${rows}`;
   const wl=Math.round(S.w*100);
   $('dBtns').innerHTML=S.inEq?'<button class="btn ghost" data-a="Behold">Behold aktierne</button><button class="btn ghost" data-a="Sælg">Sælg aktierne</button>'
     :`<button class="btn ghost" data-a="Bliv ude">Bliv ude</button><button class="btn ghost" data-a="Køb">Køb aktier igen<small>tilbage til ${wl}\u00a0% aktier</small></button>`;
@@ -356,7 +383,7 @@ $('againBtn').onclick=()=>{let i;do{i=STARTS[Math.floor(Math.random()*STARTS.len
 $('sameBtn').onclick=()=>showStart();
 function showStart(){$('reveal').classList.add('hidden');$('play').classList.add('hidden');$('start').classList.remove('hidden');window.scrollTo({top:0,behavior:RM?'auto':'smooth'});}
 let lastW=innerWidth;addEventListener('resize',()=>{if(innerWidth===lastW||!S)return;lastW=innerWidth;$('reveal').classList.contains('hidden')?draw():draw(true);});
-$('foot').textContent=`Aktier: MSCI ACWI Net TR i DKK. Obligationer: Bloomberg Global Aggregate, valutaafdækket (EUR-afdækket til 2011, derefter DKK-afdækket). Rigtige månedsafkast fra en 10-årsperiode mellem ${mlab(0)} og ${mlab(M.length-1)}; alle får samme periode i dag. Kilde: MSCI og Bloomberg, hentet via Bloomberg. Fast fordeling, rebalanceret månedligt. Sælger du, står pengene i obligationer. Maks. fald er målt på månedsslut. Før skat og omkostninger. Handler er gratis her; i virkeligheden koster hver handel kurtage og spread og evt. skat. Historiske afkast er ingen garanti for fremtidige.`;
+$('foot').textContent=`Aktier: MSCI ACWI Net TR i DKK. Obligationer: Bloomberg Global Aggregate, valutaafdækket (EUR-afdækket til 2011, derefter DKK-afdækket). Rigtige månedsafkast fra en tilfældig 10-årsperiode mellem ${mlab(0)} og ${mlab(M.length-1)}. Overskrifterne er forenklede, men bygger på noget, der skete i den måned; ekspertudsagnene er typiske eksempler. Kilde: MSCI og Bloomberg, hentet via Bloomberg. Fast fordeling, rebalanceret månedligt. Sælger du, står pengene i obligationer. Maks. fald er målt på månedsslut. Før skat og omkostninger. Handler er gratis her; i virkeligheden koster hver handel kurtage og spread og evt. skat. Historiske afkast er ingen garanti for fremtidige.`;
 </script>
 </body>
 </html>

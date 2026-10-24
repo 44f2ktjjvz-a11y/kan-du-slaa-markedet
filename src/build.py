@@ -17,7 +17,7 @@ def build(tpl_path, out_path, extra=None, payload=None):
     print(out_path.relative_to(root), len(out), "bytes")
 
 build(root / "src" / "index.template.html", root / "index.html")
-build(root / "src" / "hvadnu.template.html", root / "hvadnu.html")
+build(root / "src" / "hvadnu.template.html", root / "hvadnu.html", {"/*NEWS*/": (root / "src" / "news.js").read_text(encoding="utf-8")})
 build(root / "src" / "portefolje.template.html", root / "portefolje.html",
       payload=(root / "data" / "builder.json").read_text(encoding="utf-8"))
 # præsentationen og dens kilde ligger i local/, som git ignorerer: den må aldrig blive offentlig
