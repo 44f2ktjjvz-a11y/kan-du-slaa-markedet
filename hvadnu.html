@@ -53,6 +53,13 @@ canvas{display:block;width:100%}
 .tag.crash{background:rgba(255,93,115,.18);color:#ff8f9f}.tag.rally{background:rgba(52,211,153,.16);color:#6ee7b7}.tag.calm{background:rgba(255,255,255,.1);color:#cbd5e1}.tag.v{background:rgba(251,191,36,.16);color:#fcd34d}
 .news{font-size:1.25rem;font-weight:800;line-height:1.2;margin:8px 0 2px}
 .since{font-size:.92rem;color:var(--muted);margin-bottom:6px}
+.mine{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:8px 0 2px}
+.mine span{width:100%;font-size:.75rem;color:var(--muted);font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.mine b{font-size:2rem;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.mine em{font-style:normal;font-weight:800;font-size:1.05rem}
+.mkt{font-size:1rem;margin:4px 0 6px}.mkt b{font-size:1.15rem}
+.outline{font-size:.95rem;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:12px;padding:8px 10px;margin:6px 0}
+#dBtns .btn small{display:block;font-size:.72rem;font-weight:600;opacity:.8;margin-top:2px}
 .bign{font-size:2.2rem;font-weight:900;line-height:1;margin:6px 0 2px;letter-spacing:-.02em}
 .bign span{display:block;font-size:.8rem;color:var(--muted);font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
 .kline{font-size:1.05rem;color:var(--ink);margin:10px 0 6px}
@@ -77,6 +84,17 @@ td:first-child,th:first-child{text-align:left}
 .log{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .log div{display:flex;justify-content:space-between;gap:10px;font-size:.88rem;background:var(--card2);border-radius:12px;padding:8px 11px}
 .log b{font-variant-numeric:tabular-nums}
+.how ol{margin:8px 0 0;padding-left:20px}.how li{margin:6px 0;color:var(--muted)}.how li b{color:var(--ink)}
+.mix button em{display:block;font-style:normal;font-size:.72rem;color:var(--muted);margin-top:6px;line-height:1.3}
+.mix{grid-template-columns:1fr}@media(min-width:460px){.mix{grid-template-columns:repeat(3,1fr)}}
+.mix button{text-align:left}@media(min-width:460px){.mix button{text-align:center}}
+details.explain{margin-top:12px;font-size:.9rem}details.explain summary{cursor:pointer;color:var(--a2);font-weight:700}
+details.explain p{color:var(--muted);margin:8px 0 0}
+.hint{font-size:.88rem;color:var(--muted);margin:12px 4px 0}
+.takeaway{border-color:rgba(139,92,255,.35);background:linear-gradient(135deg,rgba(139,92,255,.14),rgba(34,211,238,.08))}
+.takeaway p{font-size:.93rem;margin:8px 0 0}
+.sellnote{font-size:.8rem;color:var(--muted);margin:2px 0 12px;text-align:center}
+.tbldet summary{cursor:pointer;color:var(--a2);font-weight:700;font-size:.85rem;margin:2px 0 8px}
 .foot{font-size:.75rem;color:var(--muted);margin-top:16px;line-height:1.5}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-top:6px}
 .legend i{display:inline-block;width:14px;height:5px;border-radius:3px;margin-right:6px;vertical-align:middle}
@@ -88,17 +106,32 @@ td:first-child,th:first-child{text-align:left}
 <div class="wrap">
   <div class="top"><a href="./">← Alle opgaver</a><span style="font-size:.8rem;color:var(--muted)">Undervisning, ikke rådgivning</span></div>
   <h1>Hvad gør du <span class="grad">nu?</span></h1>
-  <p class="lead" id="lead">Du sætter <b style="color:#fff">100.000 kr.</b> i en global portefølje i 10 år. Afkastene er rigtige, men du får ikke at vide, hvornår de 10 år er. Undervejs sker der ting. Du bestemmer selv, hvad du gør.</p>
+  <p class="lead" id="lead">Du investerer <b style="color:#fff">100.000 kr.</b> i 10 år. Tallene er rigtige og kommer fra virkeligheden, men du ved ikke, hvilke år det er. Kan du træffe de rigtige valg undervejs?</p>
 
   <!-- start -->
-  <section class="card" id="start">
-    <b>Vælg din fordeling</b>
-    <div class="mix" id="mix">
-      <button data-w="1"><b>100 %</b><span>aktier</span></button>
-      <button data-w="0.6"><b>60/40</b><span>aktier/obl.</span></button>
-      <button data-w="0.3"><b>30/70</b><span>aktier/obl.</span></button>
+  <section id="start">
+    <div class="card how">
+      <b>Sådan spiller du</b>
+      <ol>
+        <li><b>Vælg</b>, hvor mange af dine penge der skal i aktier. Resten kommer i obligationer.</li>
+        <li><b>Tryk Start.</b> Du ser din portefølje vokse og falde måned for måned.</li>
+        <li><b>Når der sker noget</b> på markedet, stopper spillet. Så vælger du: beholde aktierne eller sælge dem.</li>
+        <li><b>Til sidst</b> ser du, hvilke år det var, og om dine valg hjalp eller skadede.</li>
+      </ol>
     </div>
-    <p style="font-size:.85rem;color:var(--muted);margin:12px 0 0">Alle i lokalet får den samme hemmelige periode i dag.</p>
+    <div class="card">
+      <b>1. Hvor meget vil du have i aktier?</b>
+      <div class="mix" id="mix">
+        <button data-w="1"><b>100 %</b><span>aktier</span><em>Svinger mest. Giver typisk mest over tid.</em></button>
+        <button data-w="0.6"><b>60 %</b><span>aktier, 40 % obligationer</span><em>En mellemting.</em></button>
+        <button data-w="0.3"><b>30 %</b><span>aktier, 70 % obligationer</span><em>Svinger mindst. Giver typisk mindre.</em></button>
+      </div>
+      <details class="explain"><summary>Hvad er aktier og obligationer?</summary>
+        <p><b>Aktier</b> er små ejerandele i virksomheder. Her ejer du lidt af alle verdens store virksomheder på én gang. Værdien kan stige og falde meget.</p>
+        <p><b>Obligationer</b> er lån til stater og store virksomheder, som betaler renter. De svinger meget mindre end aktier, men giver typisk også mindre.</p>
+      </details>
+      <p style="font-size:.85rem;color:var(--muted);margin:12px 0 0">Alle i lokalet får de samme hemmelige år i dag.</p>
+    </div>
   </section>
 
   <!-- play -->
@@ -112,6 +145,8 @@ td:first-child,th:first-child{text-align:left}
       <div class="where"><span id="when">År 1</span><span class="pos" id="pos"><i></i></span></div>
       <div class="track"><i id="prog" style="width:0"></i></div>
     </div>
+    <p class="hint" id="playHint">Grafen viser, hvad dine 100.000 kr. er værd. Spillet stopper af sig selv, når der sker noget, du skal tage stilling til.</p>
+    <p class="hint hidden" id="autoHint">Spillet kører af sig selv og stopper, når du skal vælge.</p>
     <button class="btn" id="goBtn">Start ▶</button>
   </section>
 
@@ -121,21 +156,29 @@ td:first-child,th:first-child{text-align:left}
       <div style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:800">Din hemmelige periode var</div>
       <div class="period grad" id="rPeriod" tabindex="-1" style="font-size:2rem;outline:none"></div>
       <canvas id="cv2" height="250" role="img" aria-label="Din portefølje mod at have gjort ingenting, med kriserne markeret"></canvas>
-      <div class="legend"><span><i style="background:linear-gradient(90deg,var(--a1),var(--a2))"></i>Dig</span><span><i style="background:#cbd5e1"></i>Hvis du ikke havde gjort noget</span><span><i style="background:rgba(255,93,115,.6)"></i>Kriser</span></div>
+      <div class="legend"><span><i style="background:linear-gradient(90deg,var(--a1),var(--a2))"></i>Dig</span><span><i style="background:#cbd5e1"></i>Hvis du ikke havde gjort noget</span><span><i style="background:rgba(255,93,115,.6)"></i>Kriser</span><span><b style="color:#ff5d73">●</b> du solgte</span><span><b style="color:#34d399">●</b> du købte</span></div>
       <div class="cmp">
         <div class="st"><div class="l">Dig</div><div class="v" id="rYou"></div></div>
         <div class="st"><div class="l">Gjort ingenting</div><div class="v" id="rHold"></div></div>
       </div>
       <p id="rMsg" aria-live="polite" style="font-weight:700;margin:14px 0 4px"></p>
+      <p style="font-size:.88rem;color:var(--muted);margin:6px 0 0">Den farvede linje er dig. Den grå linje viser, hvad der var sket, hvis du bare havde ladet pengene stå. De røde streger er rigtige kriser i perioden.</p>
+    </div>
+    <div class="card takeaway">
+      <b>Hvad viser spillet?</b>
+      <p>Sælger man, når det falder, skal man også ramme det rigtige tidspunkt at købe tilbage. Vi har prøvet tre strategier i alle <b id="tkN"></b> mulige 10-årsperioder:</p>
+      <div class="log" id="tkTab" style="margin-top:8px"></div>
+      <p id="tkTxt"></p>
     </div>
     <div class="card">
       <b>Dine valg</b>
       <div class="log" id="rLog"></div>
     </div>
     <div class="card">
-      <b>Samme periode, alle fordelinger</b>
+      <b>Hvad hvis du havde valgt en anden fordeling?</b>
+      <p style="font-size:.85rem;color:var(--muted);margin:4px 0 0">Samme år, men uden at gøre noget undervejs.</p>
       <table id="rTab"></table>
-      <p style="font-size:.8rem;color:var(--muted);margin:8px 0 0">Max fald = største fald fra top til bund undervejs.</p>
+      <p style="font-size:.8rem;color:var(--muted);margin:8px 0 0">Pr. år = gennemsnitligt afkast om året. Maks. fald = det største fald fra top til bund undervejs.</p>
     </div>
     <button class="btn" id="againBtn">Prøv en anden periode ↻</button>
     <button class="btn ghost" id="sameBtn">Samme periode, ny fordeling</button>
@@ -149,6 +192,7 @@ td:first-child,th:first-child{text-align:left}
   <div class="news" id="dNews"></div>
   <div class="since" id="dSince"></div>
   <div class="btns" id="dBtns"></div>
+  <p class="sellnote" id="dNote"></p>
 </div></div>
 
 <script>
@@ -162,7 +206,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const STARTS=[];for(let i=0;i+LEN<=M.length;i++)STARTS.push(i); // alle startmåneder, så måned og år ikke afslører perioden
 const MON=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
 const mlab=i=>{const [y,m]=M[i][0].split('-');return MON[+m-1]+' '+y;};
-const CRISES=[['2000-03','IT-boblen brister'],['2001-09','11. september'],['2008-09','Finanskrisen'],['2011-08','Gældskrisen i Europa'],['2015-08','Kina-uro'],['2018-12','Renter og handelskrig'],['2020-03','Corona'],['2022-06','Inflation og renter'],['2025-04','Toldchok']];
+const CRISES=[['2000-03','IT-boble'],['2001-09','11. sep.'],['2008-09','Finanskrise'],['2011-08','Gældskrise'],['2015-08','Kina'],['2018-12','Handelskrig'],['2020-03','Corona'],['2022-06','Inflation'],['2025-04','Told']];
 
 /* ---------- periode: samme for alle i dag ---------- */
 function dayIndex(){const d=new Date(),s=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0)%STARTS.length;}
@@ -180,21 +224,21 @@ function stopsFor(start){ // ud fra aktiemarkedet, så alle med samme periode f�
     if(lvl<levels.length&&dd<=levels[lvl]){while(lvl<levels.length&&dd<=levels[lvl])lvl++;out.push({m,type:'crash',dd,lvl});lastStop=m;trough=v;troughAt=m;continue;}
     const prevCrash=out.length&&out[out.length-1].type==='crash';
     if(prevCrash&&m-troughAt<=5&&v/trough-1>=0.18){out.push({m,type:'v',up:v/trough-1});lastStop=m;trough=v;troughAt=m;continue;}
-    if(m>=12&&m-lastRally>=18&&eq[m]/eq[m-12]-1>=0.25){out.push({m,type:'rally',up:eq[m]/eq[m-12]-1});lastStop=m;lastRally=m;continue;}
-    if(m-lastStop>=36&&dd>-0.10){out.push({m,type:'calm'});lastStop=m;}
+    if(m>=12&&m-lastRally>=24&&eq[m]/eq[m-12]-1>=0.30){out.push({m,type:'rally',up:eq[m]/eq[m-12]-1});lastStop=m;lastRally=m;continue;}
+    if(m-lastStop>=48&&dd>-0.10){out.push({m,type:'calm'});lastStop=m;}
   }
   return out;
 }
 
 /* ---------- spil ---------- */
 let S=null;
-function newGame(w){S={w,inEq:true,v:[1],h:[1],k:0,stops:stopsFor(P.start),si:0,log:[],lastStopVal:1,lastStopEq:1,eqIdx:1,running:false};
+function newGame(w){S={w,inEq:true,v:[1],h:[1],k:0,stops:stopsFor(P.start),si:0,log:[],lastStopVal:1,lastStopEq:1,eqIdx:1,running:false,sh:null};
   $('start').classList.add('hidden');$('reveal').classList.add('hidden');$('play').classList.remove('hidden');
-  $('goBtn').textContent='Start ▶';$('goBtn').disabled=false;updHud();draw();window.scrollTo({top:0,behavior:RM?'auto':'smooth'});}
+  $('goBtn').textContent='Start ▶';$('goBtn').disabled=false;$('goBtn').classList.remove('hidden');$('playHint').classList.remove('hidden');$('autoHint').classList.add('hidden');updHud();draw();window.scrollTo({top:0,behavior:RM?'auto':'smooth'});}
 document.querySelectorAll('#mix button').forEach(b=>b.onclick=()=>newGame(+b.dataset.w));
 function step(){const r=M[P.start+S.k],e=r[1],b=r[2],w=S.inEq?S.w:0;
-  S.v.push(S.v[S.v.length-1]*(1+w*e+(1-w)*b));S.h.push(S.h[S.h.length-1]*(1+S.w*e+(1-S.w)*b));S.eqIdx*=1+e;S.k++;}
-function run(){if(S.running)return;S.running=true;$('goBtn').disabled=true;
+  if(S.sh)S.sh*=1+S.w*e+(1-S.w)*b;S.v.push(S.v[S.v.length-1]*(1+w*e+(1-w)*b));S.h.push(S.h[S.h.length-1]*(1+S.w*e+(1-S.w)*b));S.eqIdx*=1+e;S.k++;}
+function run(){if(S.running)return;S.running=true;$('goBtn').classList.add('hidden');$('playHint').classList.add('hidden');$('autoHint').classList.remove('hidden');
   const target=S.si<S.stops.length?S.stops[S.si].m:LEN;
   const tick=()=>{step();updHud();draw();
     if(S.k>=target){S.running=false;if(S.k>=LEN)return finish();decide(S.stops[S.si]);return;}
@@ -241,49 +285,72 @@ function decide(st){const eqSince=S.eqIdx/S.lastStopEq-1,valSince=S.v[S.v.length
   const tag={crash:['crash','Fald'],v:['v','Comeback'],rally:['rally','Stigning'],calm:['calm','Status']}[st.type];
   $('dTag').className='tag '+tag[0];$('dTag').textContent=tag[1];
   $('dNews').textContent=n[0];
-  const per=months===12?'det seneste år':months>=24?`de seneste ${String(Math.round(months/12*10)/10).replace('.',',')} år`:`de seneste ${months} måneder`;
+  const dur=m=>{const y=Math.floor(m/12),mm=m%12;return [y?`${y} år`:'',mm?`${mm} måned${mm>1?'er':''}`:''].filter(Boolean).join(' og ');};
   const col=x=>x<-0.0005?'#ff8f9f':x>0.0005?'#6ee7b7':'#cbd5e1';
-  const krs=x=>(x<0?'−':'+')+Math.abs(Math.round(x)).toLocaleString('da-DK')+'\u00a0kr.';
-  const vNow=S.v[S.v.length-1],vTop=Math.max(...S.v),eqStart=S.eqIdx-1;
-  const bigN=st.type==='crash'?[st.dd,'Aktiemarkedet fra toppen']:st.type==='rally'?[st.up,'Aktiemarkedet det seneste år']:st.type==='v'?[st.up,'Aktiemarkedet fra bunden']:[eqStart,'Aktiemarkedet siden start'];
-  // én sætning i kroner, så tabet eller gevinsten føles
-  const kline=vNow<1?`Du har tabt <b style="color:#ff8f9f">${Math.round((1-vNow)*1e5).toLocaleString('da-DK')}\u00a0kr.</b> af dine 100.000\u00a0kr.`
-    :vNow<vTop-0.005?`Du er <b style="color:#ff8f9f">${Math.round((vTop-vNow)*1e5).toLocaleString('da-DK')}\u00a0kr.</b> under din højeste værdi, men stadig over de 100.000\u00a0kr., du startede med.`
-    :`Du har tjent <b style="color:#6ee7b7">${Math.round((vNow-1)*1e5).toLocaleString('da-DK')}\u00a0kr.</b> på dine 100.000\u00a0kr.`;
+  const krn=x=>Math.abs(Math.round(x)).toLocaleString('da-DK')+'\u00a0kr.';
+  const vNow=S.v[S.v.length-1],vTop=Math.max(...S.v),eqStart=S.eqIdx-1,you=vNow-1;
+  // 1) dine egne penge først og størst
+  const kline=vNow<1?`Du har tabt <b style="color:#ff8f9f">${krn((1-vNow)*1e5)}</b> af dine 100.000\u00a0kr.`
+    :vNow<vTop-0.005?`Du er <b style="color:#ff8f9f">${krn((vTop-vNow)*1e5)}</b> under din højeste værdi, men stadig over de 100.000\u00a0kr., du startede med.`
+    :`Du har tjent <b style="color:#6ee7b7">${krn((vNow-1)*1e5)}</b> på dine 100.000\u00a0kr.`;
+  // 2) markedet, i én linje
+  const mk=st.type==='crash'?[st.dd,'fra sit højeste']:st.type==='rally'?[st.up,'det seneste år']:st.type==='v'?[st.up,'fra bunden']:[eqStart,'siden du startede'];
+  // 3) har du solgt: hvad havde du haft, hvis du ikke havde solgt?
+  const outLine=!S.inEq&&S.sh?`<div class="outline">Du er ude af aktier. Havde du ikke solgt, havde du haft <b style="color:${S.sh>vNow?'#ff8f9f':'#6ee7b7'}">${krn(S.sh*1e5)}</b> i stedet for ${krn(vNow*1e5)}</div>`:'';
   const first=!S.log.length;
-  const rows=`<div class="tbl"><span></span><span>Aktiemarkedet</span><span>Din portefølje</span>
-    <span>Siden start</span><b style="color:${col(eqStart)}">${pct(eqStart)}</b><b style="color:${col(vNow-1)}">${kr(vNow*1e5)}<small>${krs((vNow-1)*1e5)}</small></b>
-    ${first?'':`<span>Siden dit sidste valg</span><b style="color:${col(eqSince)}">${pct(eqSince)}</b><b style="color:${col(valSince)}">${pct(valSince)}</b>`}</div>`;
-  $('dSince').innerHTML=`<div class="bign" style="color:${col(bigN[0])}">${pct(bigN[0])}<span>${bigN[1]}</span></div><div class="kline">${kline}</div><div class="newsub">${n[1]}${first?'':` <span style="opacity:.8">Dit sidste valg var for ${per.replace('de seneste ','').replace('det seneste ','1 ')} siden.</span>`}</div>${rows}`;
+  const rows=`<details class="tbldet"><summary>Se flere tal</summary><div class="tbl"><span></span><span>Aktiemarkedet</span><span>Din portefølje</span>
+    <span>Siden start</span><b style="color:${col(eqStart)}">${pct(eqStart)}</b><b style="color:${col(you)}">${pct(you)}</b>
+    ${first?'':`<span>Siden dit sidste valg</span><b style="color:${col(eqSince)}">${pct(eqSince)}</b><b style="color:${col(valSince)}">${pct(valSince)}</b>`}</div></details>`;
+  $('dSince').innerHTML=`<div class="mine"><span>Din portefølje</span><b style="color:${col(you)}">${kr(vNow*1e5)}</b><em style="color:${col(you)}">${pct(you)} siden start</em></div>
+    <div class="kline">${kline}</div>
+    <div class="mkt">Aktiemarkedet: <b style="color:${col(mk[0])}">${pct(mk[0])}</b> ${mk[1]}</div>${outLine}
+    <div class="newsub">${n[1]}${first?'':` Dit sidste valg var for ${dur(months)} siden.`}</div>${rows}`;
+  const wl=Math.round(S.w*100);
   $('dBtns').innerHTML=S.inEq?'<button class="btn ghost" data-a="Behold">Behold aktierne</button><button class="btn ghost" data-a="Sælg">Sælg aktierne</button>'
-    :'<button class="btn ghost" data-a="Bliv ude">Bliv ude</button><button class="btn ghost" data-a="Køb">Køb tilbage</button>';
+    :`<button class="btn ghost" data-a="Bliv ude">Bliv ude</button><button class="btn ghost" data-a="Køb">Køb aktier igen<small>tilbage til ${wl}\u00a0% aktier</small></button>`;
   $('dBtns').querySelectorAll('button').forEach(b=>b.onclick=()=>act(b.dataset.a,st));
+  $('dNote').textContent=S.inEq?'Sælger du, flyttes pengene over i obligationer, som svinger mindre. Du kan købe aktier igen senere.':'Dine penge står i obligationer, indtil du køber aktier igen.';
   $('sheet').classList.add('on');setTimeout(()=>{const b=$('dBtns').querySelector('button');if(b)b.focus({preventScroll:true});},460);
   if(st.type==='crash'){document.querySelector('.wrap').classList.remove('shake');void document.body.offsetWidth;document.querySelector('.wrap').classList.add('shake');
     const f=$('flash');f.style.background='rgba(255,40,70,.25)';f.style.opacity=1;setTimeout(()=>f.style.opacity=0,220);}
 }
 function act(a,st){if(!$('sheet').classList.contains('on'))return;$('sheet').classList.remove('on');$('dBtns').innerHTML='';
   S.log.push({m:S.k,act:a,type:st.type,eqDd:st.dd});
-  if(a==='Sælg')S.inEq=false;if(a==='Køb')S.inEq=true;
+  if(a==='Sælg'){S.inEq=false;S.sh=S.v[S.v.length-1];}if(a==='Køb'){S.inEq=true;S.sh=null;}
   S.lastStopVal=S.v[S.v.length-1];S.lastStopEq=S.eqIdx;S.si++;updHud();draw();
-  $('goBtn').disabled=false;$('goBtn').textContent=S.si<S.stops.length?'Fortsæt ▶':'Kør til slut ▶';setTimeout(run,350);}
+  setTimeout(run,350);}
 
 /* ---------- afsløring ---------- */
+let TK=null; // tre typiske strategier i alle perioder, regnet med spillets egne stop
+function takeaway(){if(!TK){const sim=(start,rule)=>{const st=stopsFor(start);let v=1,h=1,inEq=true,si=0;
+    for(let k=0;k<LEN;k++){const r=M[start+k],w=inEq?1:0;v*=1+w*r[1]+(1-w)*r[2];h*=1+r[1];
+      if(si<st.length&&st[si].m===k+1){const t=st[si].type;
+        if(rule===0){if(inEq&&t==='crash')inEq=false;else if(!inEq&&(t==='v'||t==='rally'))inEq=true;}
+        else if(rule===1){if(t==='crash')inEq=false;}
+        else {if(inEq&&t==='rally')inEq=false;else if(!inEq&&t==='crash')inEq=true;}si++;}}
+    return v>h*1.0001;};
+  TK=[0,1,2].map(r=>STARTS.filter(s=>sim(s,r)).length);}
+  const n=STARTS.length;$('tkN').textContent=n;
+  $('tkTab').innerHTML=[['Sælg ved fald, køb igen når det vender',TK[0]],['Sælg ved fald, og bliv ude',TK[1]],['Sælg efter stigninger, køb igen ved fald',TK[2]]]
+    .map(([l,x])=>`<div><span>${l}</span><b>slog i ${x} af ${n}</b></div>`).join('')+`<div><span style="color:var(--muted)">(sammenlignet med at gøre ingenting, 100\u00a0% aktier)</span></div>`;
+  const share=x=>x/n<0.25?'kun i hver fjerde periode eller sjældnere':x/n<0.4?'kun i omkring hver tredje periode':x/n<0.6?'i omkring halvdelen af perioderne':'i de fleste perioder';
+  $('tkTxt').innerHTML=`At sælge ved fald og købe igen, når det vender, virkede ${share(TK[0])}: omtrent plat eller krone. At blive ude virkede ${share(TK[1])}, og at sælge efter stigninger virkede ${share(TK[2])}. Det sikreste er at vælge en fordeling, man kan holde ud, og lade pengene stå.`;}
 function stats(w,start){let v=1,pk=1,mdd=0;for(let k=0;k<LEN;k++){const r=M[start+k];v*=1+w*r[1]+(1-w)*r[2];pk=Math.max(pk,v);mdd=Math.min(mdd,v/pk-1);}return {v,mdd,cagr:Math.pow(v,1/10)-1};}
 function finish(){$('play').classList.add('hidden');$('reveal').classList.remove('hidden');
   $('rPeriod').textContent=`${mlab(P.start)} – ${mlab(P.start+LEN-1)}`;
   const v=S.v[LEN],h=S.h[LEN];$('rYou').textContent=kr(v*1e5);$('rHold').textContent=kr(h*1e5);
   const trades=S.log.filter(l=>l.act==='Sælg'||l.act==='Køb').length;
-  const th=trades===1?'Din ene handel':`Dine ${trades} handler`;
+  const th=trades===1?'Din ene handel (et salg eller køb)':`Dine ${trades} handler (salg og køb)`;
   $('rMsg').innerHTML=!trades?`Du gjorde ingenting, og det var også en beslutning. I alle ${S.log.length} situationer beholdt du aktierne.`
     :v<h?`${th} kostede dig <span class="dn">${kr((h-v)*1e5)}</span> i forhold til at gøre ingenting. Én periode er ét eksempel. Prøv en anden.`
-    :`${th} gav <span class="up">${kr((v-h)*1e5)}</span> mere end at gøre ingenting. Var det dygtighed eller held? Én periode er ét eksempel. Prøv en anden.`;
+    :`${th} gav <span class="up">${kr((v-h)*1e5)}</span> mere end at gøre ingenting. Du slog det denne gang. Var det dygtighed eller held? Prøv en anden periode, og se om det holder.`;
   $('rLog').innerHTML=S.log.map(l=>{const lab=mlab(P.start+l.m-1);
     const lbl={crash:'Fald',v:'Comeback',rally:'Stigning',calm:'Status'}[l.type];
     return `<div><span>${lab} · ${lbl}</span><b class="${l.act==='Sælg'?'dn':l.act==='Køb'?'up':''}">${l.act}</b></div>`;}).join('')||'<div><span>Ingen situationer</span></div>';
   let rows='<tr><th>Fordeling</th><th>Slutværdi</th><th>Pr. år</th><th>Maks. fald</th></tr>';
-  [[1,'100 % aktier'],[0.6,'60/40'],[0.3,'30/70'],[0,'100 % obligationer']].forEach(([w,l])=>{const s=stats(w,P.start);rows+=`<tr><td>${l}${w===S.w?' ←':''}</td><td>${kr(s.v*1e5)}</td><td>${pct(s.cagr,1)}</td><td>${pct(s.mdd)}</td></tr>`;});
+  [[1,'100 % aktier'],[0.6,'60 % aktier'],[0.3,'30 % aktier'],[0,'0 % aktier']].forEach(([w,l])=>{const s=stats(w,P.start);rows+=`<tr><td>${l}${w===S.w?' <span style="color:var(--a2)">(dit valg)</span>':''}</td><td>${kr(s.v*1e5)}</td><td>${pct(s.cagr,1)}</td><td>${pct(s.mdd)}</td></tr>`;});
   $('rTab').innerHTML=rows;
+  takeaway();
   requestAnimationFrame(()=>draw(true));window.scrollTo({top:0,behavior:RM?'auto':'smooth'});$('rPeriod').focus({preventScroll:true});}
 $('againBtn').onclick=()=>{let i;do{i=STARTS[Math.floor(Math.random()*STARTS.length)];}while(Math.abs(i-P.start)<12&&STARTS.length>24);P.start=i;showStart();};
 $('sameBtn').onclick=()=>showStart();

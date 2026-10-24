@@ -46,7 +46,7 @@ input[type=range]{width:100%;margin:16px 0 4px;accent-color:var(--you1);height:2
 /* sectors */
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .sbtn{position:relative;text-align:left;border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:14px;padding:10px 12px;font:inherit;cursor:pointer;overflow:hidden;transition:all .2s}
-.sbtn b{display:block;font-size:.95rem}.sbtn span{font-size:.78rem;color:var(--muted)}
+.sbtn b{display:block;font-size:.95rem}.sbtn span{display:block;font-size:.76rem;color:var(--muted)}
 .sbtn[aria-pressed="true"]{border-color:var(--you1);box-shadow:0 0 0 1.5px var(--you1) inset,0 6px 24px rgba(139,92,255,.25)}
 .sbtn[aria-pressed="true"]::after{content:"↑";position:absolute;right:10px;top:8px;font-weight:800;color:var(--you2)}
 .bars{margin-top:14px;display:flex;flex-direction:column;gap:7px}
@@ -85,6 +85,11 @@ canvas{display:block;width:100%;touch-action:pan-y}
 .sw span::before{content:"";position:absolute;width:24px;height:24px;left:2px;top:2px;border-radius:50%;background:#fff;transition:.2s}
 .sw input:checked+span{background:linear-gradient(90deg,var(--you1),var(--you2))}
 .sw input:checked+span::before{transform:translateX(20px)}
+.how ol{margin:8px 0 0;padding-left:20px}.how li{margin:6px 0;color:var(--muted)}.how li b{color:var(--ink)}
+.explain{font-size:.85rem;color:var(--muted);margin:12px 0 0}
+.viewnote{font-size:.88rem;color:var(--muted);margin:0 0 8px}
+details.more{grid-column:1/-1}details.more summary{cursor:pointer;color:var(--you2);font-weight:700;font-size:.85rem;margin:4px 0}
+details.more .tiles{margin-top:8px}
 .foot{font-size:.76rem;color:var(--muted);margin-top:18px;line-height:1.5}
 .hidden{display:none!important}
 </style>
@@ -93,7 +98,15 @@ canvas{display:block;width:100%;touch-action:pan-y}
 <div class="wrap">
   <div class="top"><a href="./">← Alle opgaver</a><span class="small muted">Undervisning, ikke rådgivning</span></div>
   <h1>Byg din <span class="grad">portefølje</span></h1>
-  <p class="lead">Vælg din fordeling og dine sektorer. Se så, hvordan den <i>har</i> klaret sig siden 2001, og hvordan den <i>kan</i> klare sig i fremtiden.</p>
+  <p class="lead">Byg din egen portefølje, og se hvordan den <i>har</i> klaret sig siden 2001, og hvordan den <i>kan</i> klare sig i fremtiden.</p>
+  <section class="card how">
+    <b>Sådan gør du</b>
+    <ol>
+      <li><b>Vælg</b>, hvor meget der skal i aktier, og hvor meget i obligationer.</li>
+      <li><b>Vælg</b>, om du vil eje hele markedet, eller satse ekstra på nogle brancher.</li>
+      <li><b>Tryk Kør</b> og sammenlign med "markedet": hele verdens aktier med samme fordeling.</li>
+    </ol>
+  </section>
 
   <!-- STEP 1 -->
   <section class="card">
@@ -105,30 +118,31 @@ canvas{display:block;width:100%;touch-action:pan-y}
     <div class="split"><i class="e" id="eqBar"></i><i class="b" id="bdBar"></i></div>
     <input type="range" id="mix" min="0" max="100" step="10" value="60" aria-label="Aktieandel">
     <div class="chips" id="presets">
-      <button class="chip" data-v="10">Konservativ</button>
-      <button class="chip" data-v="40">Balanceret</button>
-      <button class="chip" data-v="60">Vækst</button>
-      <button class="chip" data-v="80">Offensiv</button>
-      <button class="chip" data-v="100">Kun aktier</button>
+      <button class="chip" data-v="10">10 %</button>
+      <button class="chip" data-v="40">40 %</button>
+      <button class="chip" data-v="60">60 %</button>
+      <button class="chip" data-v="80">80 %</button>
+      <button class="chip" data-v="100">100 %</button>
     </div>
+    <p class="explain">Flere aktier giver typisk mere afkast over tid, men også større fald undervejs. Obligationer er lån til stater og virksomheder. De svinger mindre.</p>
   </section>
 
   <!-- STEP 2 -->
   <section class="card">
-    <div class="step"><b>2</b><h2>Aktiedelen</h2></div>
+    <div class="step"><b>2</b><h2>Hvilke aktier?</h2></div>
     <div class="seg" id="mode">
       <button aria-pressed="true" data-m="bench">Hele markedet</button>
-      <button aria-pressed="false" data-m="tilt">Vælg sektorer</button>
+      <button aria-pressed="false" data-m="tilt">Vælg brancher</button>
     </div>
     <p class="small muted" id="modeTxt" style="margin:12px 0 0"></p>
     <div id="tiltBox" class="hidden">
       <div class="sgrid" id="sgrid"></div>
       <label class="small" style="display:block;margin-top:14px">
-        <div style="display:flex;justify-content:space-between;font-weight:700"><span>Hvor meget vil du overvægte?</span><span id="tTxt"></span></div>
+        <div style="display:flex;justify-content:space-between;font-weight:700"><span>Hvor meget ekstra i dine brancher?</span><span id="tTxt"></span></div>
         <input type="range" id="tilt" min="5" max="30" step="5" value="15" aria-label="Samlet overvægt">
       </label>
       <div class="bars" id="bars"></div>
-      <div class="legend"><span><i style="background:rgba(255,255,255,.25)"></i>Markedet</span><span><i style="background:linear-gradient(90deg,var(--you1),var(--you2))"></i>Dig</span><span>Tal = procentpoint af aktiedelen</span></div>
+      <div class="legend"><span><i style="background:rgba(255,255,255,.25)"></i>Markedet</span><span><i style="background:linear-gradient(90deg,var(--you1),var(--you2))"></i>Dig</span><span>Tallene viser, hvor mange procent af dine aktiepenge du har mere (+) eller mindre (−) i hver branche end markedet</span></div>
     </div>
   </section>
 
@@ -140,11 +154,11 @@ canvas{display:block;width:100%;touch-action:pan-y}
     </div>
 
     <div id="vHist" class="card">
-      <div class="small muted">100.000 kr. investeret i januar 2001</div>
-      <canvas id="cHist" height="230" role="img" aria-label="Porteføljens værdi over tid mod benchmark"></canvas>
+      <p class="viewnote">Sådan var det gået, hvis du havde sat <b>100.000 kr.</b> ind i januar 2001 med din portefølje. Den grå linje er markedet med samme fordeling af aktier og obligationer.</p>
+      <canvas id="cHist" height="230" role="img" aria-label="Porteføljens værdi over tid mod markedet"></canvas>
       <div class="small muted" style="margin-top:6px">Fald fra toppen undervejs</div>
       <canvas id="cDD" height="90" role="img" aria-label="Fald fra toppen over tid"></canvas>
-      <div class="legend"><span><i style="background:linear-gradient(90deg,var(--you1),var(--you2))"></i>Din portefølje</span><span><i style="background:var(--bench)"></i>Benchmark</span></div>
+      <div class="legend"><span><i style="background:linear-gradient(90deg,var(--you1),var(--you2))"></i>Din portefølje</span><span><i style="background:var(--bench)"></i>Markedet</span></div>
       <div class="tiles" id="tHist"></div>
       <div class="msg" id="mHist" aria-live="polite"></div>
     </div>
@@ -156,11 +170,12 @@ canvas{display:block;width:100%;touch-action:pan-y}
         <button aria-pressed="true" data-y="10">10 år</button>
         <button aria-pressed="false" data-y="20">20 år</button>
       </div>
-      <div class="small muted" style="margin-top:12px" id="mcHead"></div>
+      <p class="viewnote" style="margin-top:12px">Ingen kender fremtiden. Derfor har vi lavet <b>4.000 mulige fremtider</b> ved at blande rigtige år fra historien i tilfældig rækkefølge. Det lilla bånd viser, hvor de fleste af dem endte.</p>
+      <div class="small muted" id="mcHead"></div>
       <canvas id="cMC" height="250" role="img" aria-label="Udfaldsrum for 1.000 simulerede fremtider"></canvas>
-      <div class="legend"><span><i style="background:rgba(139,92,255,.35)"></i>90 % af fremtiderne</span><span><i style="background:rgba(139,92,255,.7)"></i>Halvdelen</span><span><i style="background:#fff"></i>Midterste</span><span><i style="background:var(--bench)"></i>Benchmark, midterste</span></div>
-      <div class="toggle" id="hindRow"><span><b id="hindLbl">Bagklogskab</b><br><span class="small muted">Antag at fremtiden giver sektorerne samme afkast som fortiden</span></span>
-        <label class="sw"><input type="checkbox" id="hind" aria-labelledby="hindLbl"><span></span></label></div>
+      <div class="legend"><span><i style="background:rgba(139,92,255,.35)"></i>9 ud af 10 fremtider</span><span><i style="background:rgba(139,92,255,.7)"></i>Halvdelen</span><span><i style="background:#fff"></i>Det typiske resultat</span><span><i style="background:var(--bench)"></i>Markedet, typisk</span></div>
+      <label class="toggle" id="hindRow" for="hind" style="cursor:pointer"><span><b id="hindLbl">Bagklogskab</b><br><span class="small muted">Lad som om de brancher, der vandt før, også vinder i fremtiden</span></span>
+        <span class="sw"><input type="checkbox" id="hind" aria-labelledby="hindLbl"><span></span></span></label>
       <div class="tiles" id="tMC"></div>
       <div class="msg" id="mMC" aria-live="polite"></div>
     </div>
@@ -168,7 +183,7 @@ canvas{display:block;width:100%;touch-action:pan-y}
     <p class="foot" id="foot"></p>
   </section>
 </div>
-<div class="cta"><button id="run">Kør simulationen ▶</button></div>
+<div class="cta"><button id="run">Vis resultatet ▶</button></div>
 
 <script>
 const DATA=/*DATA*/null;
@@ -182,6 +197,7 @@ const kr=x=>Math.round(x).toLocaleString('da-DK')+' kr.';
 const kkr=x=>x>=1e6?(x/1e6).toFixed(2).replace('.',',')+' mio. kr.':Math.round(x/1000).toLocaleString('da-DK')+'.000 kr.';
 const pp=x=>spct(x,1).replace('\u00a0%','\u00a0pct.-point');
 const [ay,am]=DATA.asof.split('-');
+const EXAMPLES={IT:'software, chips, computere',FN:'banker, forsikring',IN:'maskiner, transport, fly',CD:'biler, tøj, rejser',HC:'medicin, hospitaler',TC:'Google, Meta, tele',EN:'olie og gas',CS:'mad, drikke, sæbe',MT:'kemi, metal, papir',UT:'el, vand, varme'};
 const MON=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
 
 /* ---------- state ---------- */
@@ -199,7 +215,7 @@ document.querySelectorAll('#presets .chip').forEach(c=>c.onclick=()=>{S.w=+c.dat
 
 /* ---------- step 2 ---------- */
 SEC.forEach((s,i)=>{const b=document.createElement('button');b.className='sbtn';b.setAttribute('aria-pressed','false');
-  b.innerHTML=`<b>${s.name}</b><span>${pct(s.w,0)} af markedet</span>`;
+  b.innerHTML=`<b>${s.name}</b><span>${EXAMPLES[s.code]}</span><span>${pct(s.w,0)} af markedet</span>`;
   b.onclick=()=>{if(S.picks.has(i))S.picks.delete(i);else{if(S.picks.size>=3)return flash(b);S.picks.add(i);}updSec();};
   $('sgrid').appendChild(b);});
 function flash(b){b.animate([{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(5px)'},{transform:'translateX(0)'}],{duration:250});
@@ -217,9 +233,9 @@ function activeWeights(){ // overvægt i valgte sektorer, undervægt pro rata i 
 function updSec(){
   const tilt=S.mode==='tilt';$('tiltBox').classList.toggle('hidden',!tilt);
   document.querySelectorAll('.sbtn').forEach((b,i)=>b.setAttribute('aria-pressed',S.picks.has(i)));
-  $('tTxt').textContent='+'+Math.round(S.T*100)+' pct.-point i alt';
-  $('modeTxt').innerHTML=!tilt?'Du ejer alle sektorer i samme forhold som verdensmarkedet (MSCI ACWI). Det er <b>benchmark</b>.'
-    :S.picks.size?'De sektorer, du ikke vælger, bliver automatisk mindre i forhold til deres størrelse i markedet.':'Tryk på 1–3 sektorer, du tror på.';
+  $('tTxt').textContent=Math.round(S.T*100)+' % af aktiepengene';
+  $('modeTxt').innerHTML=!tilt?'Du ejer en lille bid af alle verdens store virksomheder, i samme forhold som markedet. Det er det, du sammenlignes med.'
+    :S.picks.size?'Du har mere i de brancher, du har valgt. De andre bliver automatisk mindre, så det hele stadig giver 100 %.':'Tryk på 1–3 brancher, du tror på.';
   const a=activeWeights(),mx=Math.max(...SEC.map((s,i)=>s.w+a[i]),0.3);
   $('bars').innerHTML=SEC.map((s,i)=>{const y=s.w+a[i],d=a[i];
     return `<div class="brow"><span class="nm">${s.name}</span><div class="track"><div class="bm" style="width:${100*s.w/mx}%"></div><div class="yw" style="width:${100*y/mx}%"></div></div><span class="d ${d>0.0005?'up':d<-0.0005?'dn':''}">${Math.abs(d)<0.0005?'':spct(d,Math.abs(d*100-Math.round(d*100))>0.05?1:0).replace(' %','')}</span></div>`;}).join('');
@@ -310,15 +326,17 @@ function renderHist(){
   const h=history(),y=h.you,b=h.bench,tilt=S.w>0&&activeWeights().some(x=>x);
   drawHist(h);
   $('tHist').innerHTML=
-    tile('Slutværdi',kkr(y.end*1e5),`${spct(y.cagr)} om året · benchmark ${kkr(b.end*1e5)}`,'',true)+
-    tile('Udsving',pct(y.vol,0),`standardafvigelse pr. år · benchmark ${pct(b.vol,0)}`)+
-    tile('Max fald',pct(y.mdd,0),`største fald · benchmark ${pct(b.mdd,0)}`,'dn')+
-    tile('Afkast pr. udsving',y.ratio.toFixed(2).replace('.',','),`risikojusteret · benchmark ${b.ratio.toFixed(2).replace('.',',')}`)+
-    tile(tilt?'Mod benchmark':'Aktier i porteføljen',tilt?pp(y.cagr-b.cagr):Math.round(S.w*100)+'\u00a0%',tilt?'pr. år':'resten er obligationer',tilt?(y.cagr>b.cagr?'up':'dn'):'');
+    tile('100.000 kr. blev til',kkr(y.end*1e5),`${spct(y.cagr)} om året i gennemsnit · markedet: ${kkr(b.end*1e5)}`,'',true)+
+    tile('Største fald',pct(y.mdd,0),`fra top til bund · markedet: ${pct(b.mdd,0)}`,'dn')+
+    tile('Et normalt år',`±${pct(y.vol,0)}`,`så meget går det typisk op eller ned · markedet: ±${pct(b.vol,0)}`)+
+    (tilt?tile('Mod markedet',(y.end>=b.end?'+':'−')+kr(Math.abs(y.end-b.end)*1e5),`${y.end>=b.end?'mere':'mindre'} end markedet siden 2001 · ${pp(y.cagr-b.cagr)} om året`,y.cagr>b.cagr?'up':'dn',true):'')+
+    `<details class="more wide"><summary>Flere tal</summary><div class="tiles">`+
+    tile('Afkast pr. udsving',y.ratio.toFixed(2).replace('.',','),`afkast delt med udsving, højere er mere afkast for risikoen · markedet: ${b.ratio.toFixed(2).replace('.',',')}`)+
+    `</div><p class="explain">Typisk udsving er standardafvigelsen af afkastet, omregnet til et år. Cirka 2 ud af 3 år ligger afkastet inden for gennemsnittet plus/minus det tal.</p></details>`;
   let msg;
-  if(!tilt)msg=`Med ${Math.round(S.w*100)} % aktier blev 100.000 kr. til <b>${kkr(y.end*1e5)}</b>. Prisen var et fald på <b>${pct(y.mdd,0)}</b> undervejs. Kunne du have holdt fast?`;
-  else msg=y.cagr>b.cagr?`Dine sektorvalg slog benchmark med <b>${pp(y.cagr-b.cagr)}</b> om året. Men husk: du valgte dem i ${ay}, med facit i hånden. Ville du have valgt dem i 2001? Skift til <b>Sådan kan det gå</b>.`
-    :`Dine sektorvalg tabte <b>${pp(b.cagr-y.cagr).replace('+','')}</b> om året til benchmark, selv om du kunne vælge med facit i hånden. Det er svært at vælge vindere.`;
+  if(!tilt)msg=`Med ${Math.round(S.w*100)} % aktier blev 100.000 kr. til <b>${kkr(y.end*1e5)}</b> Men undervejs faldt porteføljen på et tidspunkt <b>${pct(-y.mdd,0)}</b> fra toppen. Kunne du have holdt fast?<br><span style="font-size:.85rem;opacity:.85">Du ejer hele markedet, så din linje og markedets linje er den samme.</span>`;
+  else msg=y.cagr>b.cagr?`Dine branchevalg gav <b>${kr((y.end-b.end)*1e5)}</b> mere end markedet. Men husk: du valgte dem i ${ay}, med facit i hånden. Ville du have valgt dem i 2001? Skift til <b>Sådan kan det gå</b>.`
+    :`Dine branchevalg gav <b>${kr((b.end-y.end)*1e5)}</b> mindre end markedet, selv om du kunne vælge med facit i hånden. Det er svært at vælge vindere.`;
   $('mHist').innerHTML=msg;
 }
 function renderMC(){
@@ -326,28 +344,31 @@ function renderMC(){
   $('mcHead').textContent=`4.000 mulige fremtider for 100.000 kr. over ${S.H} år, trukket fra historien`;
   $('hindRow').classList.toggle('hidden',!r.tilt);
   $('tMC').innerHTML=
-    tile('Midterste udfald',kkr(r.med*v0),`halvdelen ender over · benchmark ${kkr(r.bmed*v0)}`,'',true)+
-    tile('Dårligste 5 %',kkr(r.p5*v0),'1 ud af 20 ender under','dn')+
-    tile('Bedste 5 %',kkr(r.p95*v0),'1 ud af 20 ender over','up')+
-    tile('Typisk max fald',pct(r.mddMed,0),`værste 5 %: ${pct(r.mddP5,0)}`,'dn')+
-    tile(r.tilt?'Slår benchmark':'Taber penge',r.tilt?Math.round(r.beat*100)+'\u00a0%':Math.round(r.loss*100)+'\u00a0%',r.tilt?'af fremtiderne':`af fremtiderne efter ${S.H} år, før inflation`,r.tilt?'':'dn');
+    tile('Det typiske resultat',kkr(r.med*v0),`halvdelen af fremtiderne ender over, halvdelen under · markedet: ${kkr(r.bmed*v0)}${r.tilt&&!S.hind?' (næsten det samme, fordi ingen kender vinderne)':''}`,'',true)+
+    tile('Hvis det går skidt',kkr(r.p5*v0),'1 ud af 20 fremtider ender lavere','dn')+
+    tile('Hvis det går godt',kkr(r.p95*v0),'1 ud af 20 fremtider ender højere','up')+
+    tile('Typisk største fald',pct(r.mddMed,0),`undervejs · i de værste fremtider: ${pct(r.mddP5,0)}`,'dn')+
+    tile(r.tilt?'Du slår markedet i':'Du taber penge i',`${Math.round((r.tilt?r.beat:r.loss)*100)} af 100`,r.tilt?'fremtider':`fremtider efter ${S.H} år, før inflation`,r.tilt?'':'dn');
   let msg;
   if(r.tilt){
     const other=monteCarlo(!S.hind),plain=S.hind?other:r,hind=S.hind?r:other,h=history();
     const risk=h.you.vol>h.bench.vol*1.01?'med større udsving':h.you.vol<h.bench.vol*0.99?'med lidt mindre udsving':'med samme udsving';
     const nb=Math.round(plain.beat*100),hb=Math.round(hind.beat*100);
     msg=!S.hind
-      ?`Ingen ved, hvilke sektorer der vinder fremover. Her har dine sektorvalg derfor samme forventede afkast som markedet. Så slår du benchmark i <b>${nb} af 100</b> fremtider, ${risk} og lidt højere omkostninger. Med <b>Bagklogskab</b> ville det være ${hb} af 100, ${h.you.cagr>h.bench.cagr?`fordi dine sektorer klarede sig bedre end markedet i 2001–${ay}`:`fordi dine sektorer faktisk klarede sig dårligere end markedet i 2001–${ay}`}.`
-      :`Med bagklogskab slår du benchmark i <b>${hb} af 100</b> fremtider. Det forudsætter, at fremtiden gentager 2001–${ay}. Det ved ingen. Uden bagklogskab er det ${nb} af 100.`;
+      ?`Ingen ved, hvilke brancher der vinder fremover. Her har dine branchevalg derfor samme forventede afkast som markedet. Så slår du markedet i <b>${nb} af 100</b> fremtider, ${risk} og lidt højere omkostninger. Med <b>Bagklogskab</b> ville det være ${hb} af 100, ${h.you.cagr>h.bench.cagr?`fordi dine brancher klarede sig bedre end markedet i 2001–${ay}`:`fordi dine brancher faktisk klarede sig dårligere end markedet i 2001–${ay}`}.`
+      :`Med bagklogskab slår du markedet i <b>${hb} af 100</b> fremtider. Det forudsætter, at fremtiden gentager 2001–${ay}. Det ved ingen. Uden bagklogskab er det ${nb} af 100.`;
   }
   else msg=`Over ${S.H} år taber du penge i <b>${Math.round(r.loss*100)} af 100</b> fremtider, før inflation. Jo længere tid, jo sjældnere taber du, men faldene undervejs forsvinder ikke. Prøv 1 år og 20 år.`;
   $('mMC').innerHTML=msg;
 }
 function render(){if(!S.ran)return;$('vHist').classList.toggle('hidden',S.view!=='hist');$('vMC').classList.toggle('hidden',S.view!=='mc');S.view==='hist'?renderHist():renderMC();}
 let rt=null;function rerun(){if(!S.ran)return;clearTimeout(rt);rt=setTimeout(render,150);}
-$('run').onclick=()=>{S.ran=true;SEED=Math.floor(Math.random()*1e9);$('res').classList.add('on');$('run').textContent='Kør igen ↻';render();
-  setTimeout(()=>$('res').scrollIntoView({behavior:'smooth',block:'start'}),50);};
-document.querySelectorAll('#view button').forEach(b=>b.onclick=()=>{S.view=b.dataset.v;document.querySelectorAll('#view button').forEach(x=>x.setAttribute('aria-pressed',x===b));render();});
+function updCta(){if(!S.ran)return;$('run').textContent=S.view==='hist'?'Se hvordan det kan gå i fremtiden →':'Nye tilfældige fremtider ↻';}
+function setView(v){S.view=v;document.querySelectorAll('#view button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===v));render();updCta();}
+$('run').onclick=()=>{if(!S.ran){S.ran=true;$('res').classList.add('on');render();updCta();setTimeout(()=>$('res').scrollIntoView({behavior:'smooth',block:'start'}),50);return;}
+  if(S.view==='hist'){setView('mc');setTimeout(()=>$('res').scrollIntoView({behavior:'smooth',block:'start'}),50);return;}
+  SEED=Math.floor(Math.random()*1e9);render();};
+document.querySelectorAll('#view button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
 document.querySelectorAll('#hor button').forEach(b=>b.onclick=()=>{S.H=+b.dataset.y;document.querySelectorAll('#hor button').forEach(x=>x.setAttribute('aria-pressed',x===b));render();});
 $('hind').onchange=e=>{S.hind=e.target.checked;render();};
 let lastW=document.documentElement.clientWidth;addEventListener('resize',()=>{const w=document.documentElement.clientWidth;if(w===lastW)return;lastW=w;clearTimeout(rt);rt=setTimeout(render,200);});

@@ -68,6 +68,9 @@ label.row .top{display:flex;justify-content:space-between;font-weight:600}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .note{border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin:12px 0}
 .hidden{display:none!important}
+.help{font-size:.82rem;color:var(--muted);margin-top:2px;font-weight:400}
+.how ol{margin:8px 0 0;padding-left:20px}.how li{margin:6px 0}
+.takeaway{border-color:var(--accent)}.takeaway p{margin:8px 0 0}
 .bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
 .bar>div{height:100%;background:var(--accent)}
 ul{padding-left:20px}
@@ -206,27 +209,40 @@ ul{padding-left:20px}
 <!-- GAME 3 -->
 <section id="g3">
   <h2>3 · Din første million</h2>
-  <p>Du sparer et fast beløb op hver måned, indtil du er 65.</p>
-  <div class="card">
-    <label class="row"><div class="top"><span>Pr. måned</span><span id="v_amt"></span></div><input type="range" id="amt" min="100" max="5000" step="100" value="500"></label>
-    <label class="row"><div class="top"><span>Startalder</span><span id="v_age"></span></div><input type="range" id="age" min="18" max="45" step="1" value="20"></label>
-    <label class="row"><div class="top"><span>Afkast pr. år før omkostninger</span><span id="v_ret"></span></div><input type="range" id="ret" min="2" max="9" step="0.5" value="6"></label>
-    <label class="row" style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="real"> Vis i dagens købekraft (2 % inflation, og du sparer mere op i takt med priserne)</label>
+  <p>Hvad bliver dine månedlige opsparinger til, når du er 65? Og hvad koster det at vente, eller at vælge en dyr fond?</p>
+  <div class="card how">
+    <b>Sådan gør du</b>
+    <ol>
+      <li><b>Flyt på skyderne:</b> hvor meget du sparer op om måneden, og hvor gammel du er, når du starter.</li>
+      <li><b>Se de tre tal nedenfor.</b> De viser det samme beløb i tre forskellige situationer.</li>
+      <li><b>Prøv fx</b> at starte som 20-årig og derefter som 30-årig. Hvor stor er forskellen?</li>
+    </ol>
   </div>
   <div class="card">
-    <div class="stat" style="margin-bottom:8px"><div class="lbl">Billig indeksfond (0,07 % om året)</div><div class="big" id="r1"></div><div class="bar"><div id="b1"></div></div></div>
-    <div class="stat" style="margin-bottom:8px"><div class="lbl">Dyr fond (1,5 % om året)</div><div class="val" id="r2"></div><div class="bar"><div id="b2"></div></div></div>
-    <div class="stat" style="margin-bottom:8px"><div class="lbl">Billig fond, men du starter 10 år senere</div><div class="val" id="r3"></div><div class="bar"><div id="b3"></div></div></div>
+    <label class="row"><div class="top"><span>Pr. måned</span><span id="v_amt"></span></div><input type="range" aria-label="Beløb pr. måned" id="amt" min="100" max="5000" step="100" value="500"><div class="help">Det beløb du sætter ind hver måned, til du er 65.</div></label>
+    <label class="row"><div class="top"><span>Startalder</span><span id="v_age"></span></div><input type="range" aria-label="Startalder" id="age" min="18" max="45" step="1" value="20"><div class="help">Jo tidligere du starter, jo længere tid får pengene til at vokse.</div></label>
+    <label class="row"><div class="top"><span>Afkast pr. år før omkostninger</span><span id="v_ret"></span></div><input type="range" aria-label="Afkast pr. år" id="ret" min="2" max="9" step="0.5" value="6"><div class="help">Hvor meget pengene vokser om året i gennemsnit. 6 % er et realistisk bud for aktier over lang tid. Fondens omkostninger trækkes fra.</div></label>
+    <label class="row" style="display:flex;gap:8px;align-items:flex-start;font-weight:600"><input type="checkbox" id="real" style="margin-top:4px"><span>Vis i dagens købekraft<div class="help" style="font-weight:400">Priserne stiger ca. 2 % om året, så en krone om 40 år er mindre værd end i dag. Slår du det til, vises beløbene i det, de kan købe i dag. Vi antager, at du sparer lidt mere op hvert år, så beløbet følger med priserne.</div></span></label>
+  </div>
+  <div class="card">
+    <div class="stat" style="margin-bottom:8px"><div class="lbl">Billig indeksfond (koster 0,07 % om året)<span class="inreal"></span></div><div class="big" id="r1"></div><div class="bar"><div id="b1"></div></div></div>
+    <div class="stat" style="margin-bottom:8px"><div class="lbl">Dyr fond (koster 1,5 % om året)<span class="inreal"></span></div><div class="val" id="r2"></div><div class="bar"><div id="b2"></div></div></div>
+    <div class="stat" style="margin-bottom:8px"><div class="lbl" id="r3l">Billig fond, men du starter 10 år senere</div><div class="val" id="r3"></div><div class="bar"><div id="b3"></div></div></div>
     <p class="small muted" id="r4" style="margin:6px 0 0"></p>
+  </div>
+  <div class="card takeaway">
+    <h3>Hvad viser det?</h3>
+    <p><b>Tid er det vigtigste.</b> Ofte er det meste af slutbeløbet ikke det, du selv har sparet op, men afkast af afkast: renters rente. Venter du 10 år, får pengene 10 år mindre til at vokse, og det er de sidste år, hvor beløbet vokser mest.</p>
+    <p><b>Omkostninger tæller.</b> 1,5 % lyder ikke af meget, men det trækkes fra hvert eneste år i 45 år.</p>
   </div>
   <div class="card">
     <h3>Sådan gør man i praksis i Danmark</h3>
     <ul>
       <li><b>Aktiesparekonto:</b> lav skat på afkastet, men et loft over, hvor meget du kan sætte ind. Tjek årets loft på skat.dk.</li>
       <li><b>Pension:</b> lav skat på afkastet, og pengene er bundet, til du når pensionsalderen.</li>
-      <li><b>ETF'er</b> uden for aktiesparekonto og pension: tjek SKATs positivliste, ellers kan beskatningen blive dyr.</li>
+      <li><b>Børshandlede fonde (ETF'er)</b> uden for aktiesparekonto og pension: tjek SKATs positivliste, ellers kan beskatningen blive dyr.</li>
     </ul>
-    <p class="small muted">Beregningen er før skat og bruger et fast afkast hvert år. Virkeligheden svinger, som du så i opgave 2.</p>
+    <p class="small muted">Beregningen er før skat og bruger det samme afkast hvert år. I virkeligheden svinger det, som du så i "Hvad gør du nu?".</p>
   </div>
   <div class="card">
     <h3>Tre ting du skal huske</h3>
@@ -463,6 +479,8 @@ function updG3(){
   const net=f=>real?(1+ret-f)/1.02-1:ret-f;
   const a=fv(amt,yrs,net(0.0007)),b=fv(amt,yrs,net(0.015)),c=fv(amt,yrsLate,net(0.0007));
   document.getElementById('r1').textContent=kr(a);document.getElementById('r2').textContent=kr(b);document.getElementById('r3').textContent=kr(c);
+  document.getElementById('r3l').textContent=`Billig fond, men du starter først som ${age+10}-årig`;
+  document.querySelectorAll('.inreal').forEach(e=>e.textContent=real?' · i dagens penge':'');
   [['b1',a],['b2',b],['b3',c]].forEach(([id,v])=>document.getElementById(id).style.width=(100*v/a)+'%');
   const dep=amt*12*yrs;
   document.getElementById('r4').textContent=`Du indbetaler selv ${kr(dep)}${real?' i dagens kroner':''} over ${yrs} år. ${Math.min(a,b,c)<dep?'Med de valgte tal ender mindst ét af beløbene under det, du selv har indbetalt.':'Resten er renters rente.'} Den dyre fond koster dig ${kr(a-b)}`;
