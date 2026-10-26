@@ -271,6 +271,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
 if(location.hash==='#g1'||location.hash==='#g2')location.replace('hvadnu.html'); // de gamle opgaver er erstattet
 else if(location.hash==='#g3')show('g3');
+if(document.body.dataset.solo){document.querySelector('header').classList.add('hidden');show(document.body.dataset.solo);}
 
 /* ---------- helpers ---------- */
 const pct=(x,d=0)=>{const t=(Math.abs(x)*100).toFixed(d);return (+t===0?'':x>0?'+':'−')+t.replace('.',',')+' %';};

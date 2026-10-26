@@ -22,3 +22,10 @@ build(root / "src" / "portefolje.template.html", root / "portefolje.html",
       payload=(root / "data" / "builder.json").read_text(encoding="utf-8"))
 # præsentationen og dens kilde ligger i local/, som git ignorerer: den må aldrig blive offentlig
 build(root / "local" / "slides.template.html", root / "local" / "slides.html", {'/*APP_URL*/""': json.dumps(APP_URL)})
+
+# Din første million som egen side uden menu og uden links til de andre opgaver
+_t = (root / "src" / "index.template.html").read_text(encoding="utf-8").replace("<body>", '<body data-solo="g3">', 1)
+_p = root / "src" / "_million.template.html"
+_p.write_text(_t, encoding="utf-8")
+build(_p, root / "million.html")
+_p.unlink()
