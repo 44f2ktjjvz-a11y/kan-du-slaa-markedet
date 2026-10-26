@@ -135,10 +135,10 @@ input[type=range]{accent-color:var(--a1);width:min(320px,70vw)}
   <h1>Hvem er salens <span class="goldt">bedste forvalter?</span></h1>
   <p class="sub">Alle rejser sig. Før hvert kast gætter du ved at række én arm op. Gætter du forkert, sætter du dig. Vi fortsætter, til der kun er én tilbage.</p>
   <div class="arms">
-    <div class="arm"><div class="ic" style="transform:scaleX(-1)">🙋</div><b>Højre arm</b><span>= Krone 👑</span></div>
-    <div class="arm"><div class="ic">🙋</div><b>Venstre arm</b><span>= Plat 🦁</span></div>
+    <div class="arm"><div class="ic">🙋</div><b>Højre arm</b><span>= Krone 👑</span></div>
+    <div class="arm"><div class="ic" style="transform:scaleX(-1)">🙋</div><b>Venstre arm</b><span>= Plat 🦁</span></div>
   </div>
-  <div class="note" style="margin-bottom:6px">Hvor mange står op?</div>
+  <div class="note" style="margin-bottom:6px">Cirka hvor mange står op?</div>
   <div class="stepper"><button data-d="-5" aria-label="5 færre">−5</button><button data-d="-1" aria-label="Én færre">−</button><output id="nOut">50</output><button data-d="1" aria-label="Én flere">+</button><button data-d="5" aria-label="5 flere">+5</button></div>
   <button class="btn" id="startBtn">Alle op at stå! ▶</button>
 </section>
@@ -158,11 +158,10 @@ input[type=range]{accent-color:var(--a1);width:min(320px,70vw)}
     </div>
     <div class="panel">
       <div class="stat">
-        <div class="standing"><div><div class="lbl">Står stadig</div><div class="s">Tæl efter, og ret tallet</div></div>
-          <div class="stepper"><button id="sMinus" aria-label="Én færre står">−</button><output id="sOut">50</output><button id="sPlus" aria-label="Én flere står">+</button></div></div>
-        <div class="s" id="expTxt" style="margin-top:6px"></div>
+        <div class="standing"><div><div class="lbl">Forventet tilbage</div><div class="s">Ved rent tilfælde, du behøver ikke tælle</div></div>
+          <output id="sOut" style="font-size:clamp(34px,4.6vw,66px);font-weight:900">50</output></div>
         <div class="people" id="people"></div>
-        <div class="row" style="justify-content:flex-start;margin-top:12px"><button class="btn" id="nextBtn" disabled>Næste runde ▶</button></div>
+        <div class="row" style="justify-content:flex-start;margin-top:12px"><button class="btn" id="doneBtn">🏆 Der er én tilbage</button><button class="btn ghost" id="undoBtn" disabled>Alle sad ned: tæl ikke</button></div>
       </div>
       <div class="two">
         <div class="stat"><div class="lbl">Chancen fra start for at <b style="color:#fff">én bestemt</b> står nu</div><div class="v" id="pYou">100 %</div><div class="s" id="pYouS">før første kast</div><div class="bar"><i id="bYou" style="width:100%;background:linear-gradient(90deg,var(--a1),var(--a2))"></i></div></div>
@@ -287,26 +286,24 @@ addEventListener('keydown',e=>{
   if(e.target.matches&&e.target.matches('input')&&e.key.startsWith('Arrow'))return;
   if(e.key==='ArrowRight'||e.key==='PageDown')go(cur+1);
   else if(e.key==='ArrowLeft'||e.key==='PageUp')go(cur-1);
-  else if(e.key===' '){e.preventDefault();if(cur===1){if(!$('flipBtn').disabled)flip();else if(!$('nextBtn').disabled)nextRound();}else if(cur===3)$('fundBtn').click();}
+  else if(e.key===' '){e.preventDefault();if(cur===1){if(!$('flipBtn').disabled)flip();}else if(cur===3)$('fundBtn').click();}
   else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{});}
 });
-function onEnter(i){if(i===1&&G.k===0&&!G.flipping&&$('nextBtn').disabled&&G.stand!==G.n)resetGame();if(i===2)fillWin();if(i===3){F.year=0;F.alive=null;$('fundBtn').textContent='Kør 5 år ▶';drawFunds(true);}if(i===4)animDots();if(i===5)animQ();}
+function onEnter(i){if(i===1&&G.k===0&&!G.flipping)resetGame();if(i===2)fillWin();if(i===3){F.year=0;F.alive=null;$('fundBtn').textContent='Kør 5 år ▶';drawFunds(true);}if(i===4)animDots();if(i===5)animQ();}
 
 /* ---------- intro ---------- */
 const G={n:50,stand:50,k:0,prevStand:50,flipping:false,angle:0,last:null,done:false,shared:false};
 document.querySelectorAll('[data-s="0"] .stepper button').forEach(b=>b.onclick=()=>{G.n=Math.max(2,Math.min(150,G.n+ +b.dataset.d));$('nOut').textContent=G.n;resetGame();});
 $('startBtn').onclick=()=>{resetGame();go(1);};
-function resetGame(){Object.assign(G,{stand:G.n,prevStand:G.n,k:0,flipping:false,last:null,done:false,shared:false});
+function resetGame(){Object.assign(G,{k:0,flipping:false,last:null,done:false,shared:false});
   $('streak').innerHTML='';$('result').innerHTML='&nbsp;';$('prompt').textContent='Gæt nu! Højre arm = krone, venstre arm = plat.';
-  $('flipBtn').disabled=false;$('nextBtn').disabled=true;$('roundTxt').textContent='Runde 1';renderPeople();updStats();}
+  $('flipBtn').disabled=false;$('flipBtn').textContent='Kast mønten 🪙';$('undoBtn').disabled=true;$('roundTxt').textContent='Kast 1';renderPeople();updStats();}
 
-/* ---------- people grid ---------- */
+/* ---------- forventet antal tilbage (ingen manuel optælling) ---------- */
+function expected(){return Math.max(1,Math.round(G.n*Math.pow(.5,G.k)));}
 function renderPeople(){const box=$('people');if(box.children.length!==G.n){box.innerHTML='';for(let i=0;i<G.n;i++)box.appendChild(document.createElement('i'));}
-  [...box.children].forEach((e,i)=>{e.classList.toggle('out',i>=G.stand);e.classList.toggle('star',G.stand===1&&i===0);});
-  $('sOut').textContent=G.stand;
-  const e=G.n*Math.pow(.5,G.k+($('nextBtn').disabled?0:1));$('expTxt').textContent=`Forventet ved ren tilfældighed: ${e.toFixed(1).replace('.',',')}`;}
-function setStand(v){if(G.flipping)return;const lo=$('nextBtn').disabled?1:0;G.stand=Math.max(lo,Math.min(G.prevStand,v));renderPeople();}
-$('sMinus').onclick=()=>setStand(G.stand-1);$('sPlus').onclick=()=>setStand(G.stand+1);
+  const e=expected();[...box.children].forEach((x,i)=>{x.classList.toggle('out',i>=e);x.classList.toggle('star',e===1&&i===0);});
+  $('sOut').textContent=G.n*Math.pow(.5,G.k)<1?'~1':e;}
 
 /* ---------- stats ---------- */
 function updStats(){const k=G.k,py=Math.pow(0.5,k),pa=pAny(k,G.n);
@@ -323,17 +320,13 @@ function flip(){if(G.flipping)return;G.flipping=true;$('flipBtn').disabled=true;
   setTimeout(()=>{$('coinwrap').classList.remove('flipping');
     $('result').innerHTML=r?'<span style="color:#fde68a">🦁 PLAT</span>':'<span style="color:#fde68a">👑 KRONE</span>';
     $('prompt').innerHTML=r?'Havde du <b>højre</b> arm oppe? Sæt dig ned.':'Havde du <b>venstre</b> arm oppe? Sæt dig ned.';
-    G.flipping=false;G.prevStand=G.stand;$('nextBtn').disabled=false;setStand(Math.round(G.stand/2));
+    G.flipping=false;G.k++;$('streak').appendChild(document.createElement('i'));updStats();renderPeople();
+    $('flipBtn').disabled=false;$('flipBtn').textContent='Kast igen 🪙';$('undoBtn').disabled=false;$('roundTxt').textContent='Kast '+(G.k+1);
     burst(innerWidth*0.28,innerHeight*0.42,26,['#fbbf24','#fde68a','#f59e0b']);},1850);}
 $('flipBtn').onclick=flip;
-function nextRound(){
-  if(G.stand===0&&G.k===0){G.stand=G.prevStand;renderPeople();toast('Alle satte sig. Vi tager runden om.');prep();return;}
-  if(G.stand===0){G.stand=G.prevStand;G.shared=true;renderPeople();G.done=true;$('nextBtn').disabled=true;toast('Alle satte sig i samme runde. De sidste '+G.stand+' deler førstepladsen.');win();return;}
-  G.k++;const d=document.createElement('i');$('streak').appendChild(d);updStats();
-  if(G.stand===1){G.done=true;$('nextBtn').disabled=true;win();return;}
-  prep();}
-function prep(){$('roundTxt').textContent='Runde '+(G.k+1);$('result').innerHTML='&nbsp;';$('prompt').textContent='Gæt nu! Højre arm = krone, venstre arm = plat.';$('flipBtn').disabled=false;$('nextBtn').disabled=true;}
-$('nextBtn').onclick=nextRound;
+$('doneBtn').onclick=()=>{if(G.flipping||G.k<1){toast('Kast mønten mindst én gang først.');return;}G.done=true;win();};
+$('undoBtn').onclick=()=>{if(G.flipping||G.k<1)return;G.k--;$('streak').lastChild&&$('streak').lastChild.remove();toast('Kastet tæller ikke. Alle rejser sig igen.');
+  $('result').innerHTML='&nbsp;';$('prompt').textContent='Gæt nu! Højre arm = krone, venstre arm = plat.';$('roundTxt').textContent='Kast '+(G.k+1);$('undoBtn').disabled=G.k<1;updStats();renderPeople();};
 
 /* ---------- winner ---------- */
 let qi=0;
@@ -342,7 +335,7 @@ function fillWin(){if(!G.done){$('wKick').textContent='Møntkast';$('wTitle').in
   const k=G.k,exp=G.n*Math.pow(.5,k);
   $('wKick').textContent=G.shared?'Delt førsteplads':'Vi har en vinder';
   $('wTitle').innerHTML=G.shared?`Salens <span class="goldt">stjerneforvaltere</span> 🏆`:`Salens <span class="goldt">stjerneforvalter</span> 🏆`;
-  $('wLead').innerHTML=`<b style="color:#fff">${k}</b> rigtige i træk${G.shared?` for ${G.stand} personer`:''}. Det ser imponerende ud.`;
+  $('wLead').innerHTML=`<b style="color:#fff">${k}</b> rigtige i træk. Det ser imponerende ud.`;
   $('wYou').textContent=fmtPct(Math.pow(0.5,k));$('wYouS').textContent=oneIn(k);
   $('wAny').textContent=fmtPct(pAny(k,G.n));
   $('wAnyS').innerHTML=`blandt ${G.n} i salen. Forventet antal med ${k} i træk: <b style="color:#fff">${exp.toFixed(1).replace('.',',')}</b>. Og fordi vi bliver ved, til der er én tilbage, kårer vi altid en vinder.`;}
